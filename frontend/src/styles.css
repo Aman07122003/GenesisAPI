@@ -1,1 +1,65 @@
-/* You can add global styles to this file, and also import other style files */
+/* ============================================================
+   Freight Console — Global Styles & Design Tokens
+   ============================================================ */
+:root {
+  /* Color */
+  --ink-900: #0F1B2D;
+  --ink-800: #16233A;
+  --ink-700: #1F3050;
+  --steel-500: #5B6B85;
+  --steel-300: #A6B0C3;
+  --line-200: #E2E6EE;
+  --line-100: #EEF1F6;
+  --surface-0: #F4F6FA;
+  --surface-1: #FFFFFF;
+  --signal-500: #FF5A1F;
+  --signal-600: #E14A12;
+  --signal-100: #FFE7DA;
+  --teal-500: #0E7C7B;
+  --teal-100: #DCF2EF;
+  --amber-500: #B7791F;
+  --amber-100: #FBEEDB;
+
+  /* Type */
+  --font-display: "Oswald", "Arial Narrow", sans-serif;
+  --font-body: "Inter", -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-mono: "IBM Plex Mono", "SFMono-Regular", monospace;
+
+  /* Radius / shadow / spacing */
+  --radius-md: 10px;
+  --radius-sm: 6px;
+  --shadow-card: 0 1px 2px rgba(15, 27, 45, 0.04), 0 8px 24px -12px rgba(15, 27, 45, 0.12);
+  --shadow-pop: 0 12px 32px -8px rgba(15, 27, 45, 0.22);
+}
+
+/* ============================================================
+   Reset
+   ============================================================ */
+*, *::before, *::after { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0;
+  background: var(--surface-0);
+  color: var(--ink-900);
+  font-family: var(--font-body);
+  font-size: 15px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+h1, h2, h3 { margin: 0; }
+p { margin: 0; }
+button { font-family: inherit; cursor: pointer; }
+input, select { font-family: inherit; font-size: inherit; color: inherit; }
+fieldset { border: 0; margin: 0; padding: 0; min-width: 0; }
+legend { padding: 0; }
+table { border-collapse: collapse; }
+
+:focus-visible {
+  outline: 2px solid var(--signal-500);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * { animation-duration: 0.001ms !important; transition-duration: 0.001ms !important; }
+}

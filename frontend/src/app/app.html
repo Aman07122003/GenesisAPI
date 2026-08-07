@@ -1,19 +1,4 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Rate Request — Freight Console</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="app.css">
-</head>
-<body>
-
 <div class="app-shell">
-
-  <!-- ============ HEADER ============ -->
   <header class="topbar">
     <div class="topbar__brand">
       <span class="topbar__mark" aria-hidden="true">
@@ -28,603 +13,215 @@
         <h1>Shipping Rate Request</h1>
       </div>
     </div>
-    <div class="topbar__meta">
-      <span class="badge badge--live">
-        <span class="badge__dot"></span> Rate Engine Online
-      </span>
-    </div>
   </header>
 
   <main class="layout">
 
-    <!-- ============ SCHEDULE STRIP ============ -->
-    <section class="card schedule-strip" aria-labelledby="schedule-heading">
-      <div class="schedule-strip__label">
-        <span class="eyebrow">01 — Dispatch</span>
-        <h2 id="schedule-heading">Scheduled Ship Date &amp; Time</h2>
-      </div>
-      <div class="schedule-strip__fields">
+    <!-- Error Message -->
+    <div *ngIf="errorMessage()" class="alert alert--error" role="alert">
+      {{ errorMessage() }}
+    </div>
+
+    <!-- Date & Time -->
+    <section class="card date-time-section" aria-label="Shipment Date and Time">
+      <div class="field-row">
         <div class="field">
           <label for="ship-date">Ship Date</label>
-          <input type="date" id="ship-date" name="scheduledShipDate" value="2026-08-06">
+          <input type="date" id="ship-date" formControlName="scheduledShipDate" class="input">
         </div>
         <div class="field">
           <label for="ship-time">Ship Time</label>
-          <input type="time" id="ship-time" name="scheduledShipTime" value="11:00">
-        </div>
-        <div class="field field--sm">
-          <label for="timezone">Time Zone</label>
-          <select id="timezone" name="timezone">
-            <option>EST — Eastern</option>
-            <option>CST — Central</option>
-            <option>MST — Mountain</option>
-            <option>PST — Pacific</option>
-          </select>
+          <input type="time" id="ship-time" formControlName="scheduledShipTime" class="input">
         </div>
       </div>
     </section>
 
-    <!-- ============ RATE FORM ============ -->
-    <form class="rate-form" aria-label="Shipping rate request form">
+    <!-- From / To -->
+    <form [formGroup]="form" class="route-section">
+      <div class="route-grid">
 
-      <!-- ORIGIN / DESTINATION -->
-      <section class="route-block" aria-labelledby="route-heading">
-        <div class="section-head">
-          <span class="eyebrow">02 — Route</span>
-          <h2 id="route-heading">Ship From &amp; Ship To</h2>
-        </div>
-
-        <div class="route-grid">
-
-          <!-- SHIP FROM -->
-          <fieldset class="card address-card">
-            <legend class="address-card__legend">
-              <span class="address-card__tag address-card__tag--from">A</span> Ship From
-            </legend>
-
-            <div class="field">
-              <label for="from-attention">Attention / Contact Name</label>
-              <input type="text" id="from-attention" name="shipFrom.attention" placeholder="Sender" value="Sender">
-            </div>
-            <div class="field">
-              <label for="from-company">Company</label>
-              <input type="text" id="from-company" name="shipFrom.company" placeholder="Company name" value="Sender">
-            </div>
-            <div class="field">
-              <label for="from-address1">Address Line 1</label>
-              <input type="text" id="from-address1" name="shipFrom.address1" value="9 Van der Graaf Crt">
-            </div>
-            <div class="field">
-              <label for="from-address2">Address Line 2 <span class="optional">Optional</span></label>
-              <input type="text" id="from-address2" name="shipFrom.address2" placeholder="Suite, unit, floor">
-            </div>
-
-            <div class="field-row">
-              <div class="field">
-                <label for="from-city">City</label>
-                <input type="text" id="from-city" name="shipFrom.cityName" value="Brampton">
-              </div>
-              <div class="field">
-                <label for="from-province">Province / State</label>
-                <select id="from-province" name="shipFrom.provinceDTO">
-                  <option selected>ON — Ontario</option>
-                  <option>BC — British Columbia</option>
-                  <option>AB — Alberta</option>
-                  <option>QC — Quebec</option>
-                </select>
-              </div>
-            </div>
-
-            <div class="field-row">
-              <div class="field">
-                <label for="from-postal">Postal / Zip Code</label>
-                <input type="text" id="from-postal" name="shipFrom.postalCode" value="L6T5E5">
-              </div>
-              <div class="field">
-                <label for="from-country">Country</label>
-                <select id="from-country" name="shipFrom.countryDTO">
-                  <option selected>CA — Canada</option>
-                  <option>US — United States</option>
-                  <option>MX — Mexico</option>
-                </select>
-              </div>
-            </div>
-
-            <div class="field-row">
-              <div class="field">
-                <label for="from-phone">Phone</label>
-                <input type="tel" id="from-phone" name="shipFrom.phone" value="877 373 9222">
-              </div>
-              <div class="field">
-                <label for="from-email">Email</label>
-                <input type="email" id="from-email" name="shipFrom.email" value="info@eshipper.com">
-              </div>
-            </div>
-          </fieldset>
-
-          <!-- ROUTE DIVIDER — signature element -->
-          <div class="route-divider" role="presentation" aria-hidden="true">
-            <span class="route-divider__stop route-divider__stop--origin"></span>
-            <span class="route-divider__line"></span>
-            <span class="route-divider__icon">
-              <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M21 12L3 12M21 12L15 6M21 12L15 18" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
-              </svg>
-            </span>
-            <span class="route-divider__line"></span>
-            <span class="route-divider__stop route-divider__stop--dest"></span>
-            <span class="route-divider__caption">Origin → Destination</span>
-          </div>
-
-          <!-- SHIP TO -->
-          <fieldset class="card address-card">
-            <legend class="address-card__legend">
-              <span class="address-card__tag address-card__tag--to">B</span> Ship To
-            </legend>
-
-            <div class="field">
-              <label for="to-attention">Attention / Contact Name</label>
-              <input type="text" id="to-attention" name="shipTo.attention" placeholder="Recipient" value="Recipient">
-            </div>
-            <div class="field">
-              <label for="to-company">Company</label>
-              <input type="text" id="to-company" name="shipTo.company" placeholder="Company name" value="Recipient">
-            </div>
-            <div class="field">
-              <label for="to-address1">Address Line 1</label>
-              <input type="text" id="to-address1" name="shipTo.address1" value="3211 Grant McConachie Way">
-            </div>
-            <div class="field">
-              <label for="to-address2">Address Line 2 <span class="optional">Optional</span></label>
-              <input type="text" id="to-address2" name="shipTo.address2" placeholder="Suite, unit, floor">
-            </div>
-
-            <div class="field-row">
-              <div class="field">
-                <label for="to-city">City</label>
-                <input type="text" id="to-city" name="shipTo.cityName" value="Richmond">
-              </div>
-              <div class="field">
-                <label for="to-province">Province / State</label>
-                <select id="to-province" name="shipTo.provinceDTO">
-                  <option>ON — Ontario</option>
-                  <option selected>BC — British Columbia</option>
-                  <option>AB — Alberta</option>
-                  <option>QC — Quebec</option>
-                </select>
-              </div>
-            </div>
-
-            <div class="field-row">
-              <div class="field">
-                <label for="to-postal">Postal / Zip Code</label>
-                <input type="text" id="to-postal" name="shipTo.postalCode" value="V7B0A4">
-              </div>
-              <div class="field">
-                <label for="to-country">Coutry</label>
-                <select id="to-country" name="shipTo.countryDTO">
-                  <option selected>CA — Canda</option>
-                  <option>US — United States</option>
-                  <option>MX — Mexico</option>
-                </select>
-              </div>
-            </div>
-
-            <div class="field-row">
-              <div class="field">
-                <label for="to-phone">Phone</label>
-                <input type="tel" id="to-phone" name="shipTo.phone" value="604 207 7077">
-              </div>
-            </div>
-          </fieldset>
-
-        </div>
-      </section>
-
-      <!-- SHIPMENT DETAILS -->
-      <section class="card panel" aria-labelledby="shipment-heading">
-        <div class="section-head">
-          <span class="eyebrow">03 — Cargo</span>
-          <h2 id="shipment-heading">Shipment Details</h2>
-        </div>
-
-        <div class="panel__grid panel__grid--top">
-          <div class="field">
-            <label for="package-type">Package Type</label>
-            <select id="package-type" name="packageTypeDTO">
-              <option selected>Package</option>
-              <option>Pallet</option>
-              <option>Envelope</option>
-              <option>Crate</option>
-            </select>
-          </div>
+        <!-- Ship From -->
+        <section class="card address-section" aria-labelledby="from-heading">
+          <h2 id="from-heading" class="section-heading">From</h2>
 
           <div class="field">
-            <label>Measurement System</label>
-            <div class="segmented" role="radiogroup" aria-label="Measurement system">
-              <label class="segmented__option">
-                <input type="radio" name="shipmentPackageUnits" checked> Imperial (in / lb)
-              </label>
-              <label class="segmented__option">
-                <input type="radio" name="shipmentPackageUnits"> Metric (cm / kg)
-              </label>
-            </div>
+            <label for="from-attention">Attention</label>
+            <input type="text" id="from-attention" formControlName="fromAttention" class="input">
           </div>
-
           <div class="field">
-            <label for="currency-code">Currency</label>
-            <select id="currency-code" name="currencyCode">
-              <option selected>CAD — Canadian Dollar</option>
-              <option>USD — US Dollar</option>
-              <option>EUR — Euro</option>
-            </select>
+            <label for="from-company">Company</label>
+            <input type="text" id="from-company" formControlName="fromCompany" class="input">
           </div>
-        </div>
-
-        <div class="package-row">
-          <div class="package-row__head">
-            <span class="package-row__index">PKG 01</span>
-            <div class="field field--grow">
-              <label for="pkg-description">Package Description</label>
-              <input type="text" id="pkg-description" name="shipmentPackages[0].description" value="eCommerce">
-            </div>
-          </div>
-
-          <div class="package-row__dims">
-            <div class="field">
-              <label for="pkg-length">Length <span class="unit">in</span></label>
-              <input type="number" id="pkg-length" name="shipmentPackages[0].length" value="7" min="0">
-            </div>
-            <div class="field">
-              <label for="pkg-width">Width <span class="unit">in</span></label>
-              <input type="number" id="pkg-width" name="shipmentPackages[0].width" value="5" min="0">
-            </div>
-            <div class="field">
-              <label for="pkg-height">Height <span class="unit">in</span></label>
-              <input type="number" id="pkg-height" name="shipmentPackages[0].height" value="2" min="0">
-            </div>
-            <div class="field">
-              <label for="pkg-weight">Weight <span class="unit">lb</span></label>
-              <input type="number" id="pkg-weight" name="shipmentPackages[0].weight" value="1" min="0">
-            </div>
-            <div class="field">
-              <label for="pkg-qty">Quantity</label>
-              <input type="number" id="pkg-qty" name="shipmentPackages[0].quantity" value="1" min="1">
-            </div>
-          </div>
-
-          <button type="button" class="ghost-btn ghost-btn--add" tabindex="-1">
-            <svg viewBox="0 0 24 24" width="16" height="16" fill="none"><path d="M12 5V19M5 12H19" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-            Add Another Package
-          </button>
-        </div>
-      </section>
-
-      <!-- ADDITIONAL SERVICES -->
-      <section class="card panel" aria-labelledby="services-heading">
-        <div class="section-head">
-          <span class="eyebrow">04 — Accessorials</span>
-          <h2 id="services-heading">Additional Services</h2>
-        </div>
-
-        <div class="toggle-grid">
-
-          <label class="toggle-card">
-            <input type="checkbox" name="shippingOrderAddSvc.ambientTemperatureRequired">
-            <span class="toggle-card__switch" aria-hidden="true"></span>
-            <span class="toggle-card__text">Ambient Temperature Required</span>
-          </label>
-
-          <label class="toggle-card">
-            <input type="checkbox" name="shippingOrderAddSvc.coldChainRequired">
-            <span class="toggle-card__switch" aria-hidden="true"></span>
-            <span class="toggle-card__text">Cold Chain Required</span>
-          </label>
-
-          <label class="toggle-card">
-            <input type="checkbox" name="shippingOrderAddSvc.keepCoolRequired">
-            <span class="toggle-card__switch" aria-hidden="true"></span>
-            <span class="toggle-card__text">Keep Cool Required</span>
-          </label>
-
-          <label class="toggle-card">
-            <input type="checkbox" name="shippingOrderAddSvc.heated">
-            <span class="toggle-card__switch" aria-hidden="true"></span>
-            <span class="toggle-card__text">Heated Transport</span>
-          </label>
-
-          <label class="toggle-card">
-            <input type="checkbox" name="shippingOrderAddSvc.crossBorderFee">
-            <span class="toggle-card__switch" aria-hidden="true"></span>
-            <span class="toggle-card__text">Cross Border Fee</span>
-          </label>
-
-          <label class="toggle-card">
-            <input type="checkbox" name="shippingOrderAddSvc.customsFreight">
-            <span class="toggle-card__switch" aria-hidden="true"></span>
-            <span class="toggle-card__text">Customs Freight</span>
-          </label>
-
-          <label class="toggle-card">
-            <input type="checkbox" name="shippingOrderAddSvc.inBondFee">
-            <span class="toggle-card__switch" aria-hidden="true"></span>
-            <span class="toggle-card__text">In-Bond Fee</span>
-          </label>
-
-          <label class="toggle-card">
-            <input type="checkbox" name="shippingOrderAddSvc.homelandSecurity">
-            <span class="toggle-card__switch" aria-hidden="true"></span>
-            <span class="toggle-card__text">Homeland Security</span>
-          </label>
-
-          <label class="toggle-card">
-            <input type="checkbox" name="shippingOrderAddSvc.docsOnly">
-            <span class="toggle-card__switch" aria-hidden="true"></span>
-            <span class="toggle-card__text">Docs Only</span>
-          </label>
-
-          <label class="toggle-card">
-            <input type="checkbox" name="shippingOrderAddSvc.deliveryAppt">
-            <span class="toggle-card__switch" aria-hidden="true"></span>
-            <span class="toggle-card__text">Delivery Appointment</span>
-          </label>
-
-          <label class="toggle-card">
-            <input type="checkbox" name="shippingOrderAddSvc.limitedAccess">
-            <span class="toggle-card__switch" aria-hidden="true"></span>
-            <span class="toggle-card__text">Limited Access Site</span>
-          </label>
-
-          <label class="toggle-card">
-            <input type="checkbox" name="shippingOrderAddSvc.exibitionSite">
-            <span class="toggle-card__switch" aria-hidden="true"></span>
-            <span class="toggle-card__text">Exhibition Site</span>
-          </label>
-
-          <label class="toggle-card">
-            <input type="checkbox" name="shippingOrderAddSvc.militaryBaseDelivery">
-            <span class="toggle-card__switch" aria-hidden="true"></span>
-            <span class="toggle-card__text">Military Base Delivery</span>
-          </label>
-
-          <label class="toggle-card">
-            <input type="checkbox" name="shippingOrderAddSvc.insidePickup">
-            <span class="toggle-card__switch" aria-hidden="true"></span>
-            <span class="toggle-card__text">Inside Pickup</span>
-          </label>
-
-          <label class="toggle-card">
-            <input type="checkbox" name="shippingOrderAddSvc.insideDelivery">
-            <span class="toggle-card__switch" aria-hidden="true"></span>
-            <span class="toggle-card__text">Inside Delivery</span>
-          </label>
-
-          <label class="toggle-card">
-            <input type="checkbox" name="shippingOrderAddSvc.shipFromTailgate">
-            <span class="toggle-card__switch" aria-hidden="true"></span>
-            <span class="toggle-card__text">Tailgate — Ship From</span>
-          </label>
-
-          <label class="toggle-card">
-            <input type="checkbox" name="shippingOrderAddSvc.shipToTailgate">
-            <span class="toggle-card__switch" aria-hidden="true"></span>
-            <span class="toggle-card__text">Tailgate — Ship To</span>
-          </label>
-
-          <label class="toggle-card">
-            <input type="checkbox" name="shippingOrderAddSvc.saturdayPickup">
-            <span class="toggle-card__switch" aria-hidden="true"></span>
-            <span class="toggle-card__text">Saturday Pickup</span>
-          </label>
-
-          <label class="toggle-card">
-            <input type="checkbox" name="shippingOrderAddSvc.satDelivery">
-            <span class="toggle-card__switch" aria-hidden="true"></span>
-            <span class="toggle-card__text">Saturday Delivery</span>
-          </label>
-
-          <label class="toggle-card">
-            <input type="checkbox" name="shippingOrderAddSvc.hold">
-            <span class="toggle-card__switch" aria-hidden="true"></span>
-            <span class="toggle-card__text">Hold for Pickup</span>
-          </label>
-
-          <label class="toggle-card">
-            <input type="checkbox" name="shippingOrderAddSvc.returnService">
-            <span class="toggle-card__switch" aria-hidden="true"></span>
-            <span class="toggle-card__text">Return Service</span>
-          </label>
-
-          <label class="toggle-card">
-            <input type="checkbox" name="shippingOrderAddSvc.singleShipment">
-            <span class="toggle-card__switch" aria-hidden="true"></span>
-            <span class="toggle-card__text">Single Shipment</span>
-          </label>
-
-          <label class="toggle-card">
-            <input type="checkbox" name="shippingOrderAddSvc.excessLength">
-            <span class="toggle-card__switch" aria-hidden="true"></span>
-            <span class="toggle-card__text">Excess Length</span>
-          </label>
-
-          <label class="toggle-card">
-            <input type="checkbox" name="shippingOrderAddSvc.pierCharge">
-            <span class="toggle-card__switch" aria-hidden="true"></span>
-            <span class="toggle-card__text">Pier Charge</span>
-          </label>
-
-          <label class="toggle-card">
-            <input type="checkbox" name="shippingOrderAddSvc.sortSegregate">
-            <span class="toggle-card__switch" aria-hidden="true"></span>
-            <span class="toggle-card__text">Sort &amp; Segregate</span>
-          </label>
-
-          <label class="toggle-card">
-            <input type="checkbox" name="shippingOrderAddSvc.noSafeDrop">
-            <span class="toggle-card__switch" aria-hidden="true"></span>
-            <span class="toggle-card__text">No Safe Drop</span>
-          </label>
-
-          <label class="toggle-card">
-            <input type="checkbox" name="shippingOrderAddSvc.fbaApproved">
-            <span class="toggle-card__switch" aria-hidden="true"></span>
-            <span class="toggle-card__text">FBA Approved</span>
-          </label>
-
-        </div>
-
-        <div class="panel__grid panel__grid--controls">
           <div class="field">
-            <label for="dangerous-goods">Dangerous Goods</label>
-            <select id="dangerous-goods" name="shippingOrderAddSvc.dangerousGoods">
-              <option selected>None</option>
-              <option>Class 1 — Explosives</option>
-              <option>Class 3 — Flammable Liquid</option>
-              <option>Class 9 — Miscellaneous</option>
-            </select>
+            <label for="from-address1">Address Line 1</label>
+            <input type="text" id="from-address1" formControlName="fromAddress1" class="input">
           </div>
-
           <div class="field">
-            <label for="signature-required">Signature Required</label>
-            <select id="signature-required" name="shippingOrderAddSvc.signatureRequired">
-              <option selected>None</option>
-              <option>Adult Signature</option>
-              <option>Direct Signature</option>
-              <option>Indirect Signature</option>
-            </select>
+            <label for="from-address2">Address Line 2</label>
+            <input type="text" id="from-address2" formControlName="fromAddress2" class="input" placeholder="Optional">
           </div>
 
-          <div class="field">
-            <label for="insurance-type">Insurance Type</label>
-            <select id="insurance-type" name="shippingOrderAddSvc.insuranceType">
-              <option selected>None</option>
-              <option>Carrier Insurance</option>
-              <option>Third-Party Insurance</option>
-            </select>
-          </div>
-
-          <div class="field">
-            <label for="insured-amount">Insured Amount <span class="unit">CAD</span></label>
-            <input type="number" id="insured-amount" name="shippingOrderAddSvc.insuredAmount" value="0.00" min="0" step="0.01">
-          </div>
-        </div>
-
-        <!-- COD -->
-        <div class="cod-block">
-          <div class="cod-block__head">
-            <h3>Collect on Delivery (COD)</h3>
-            <label class="toggle-card toggle-card--inline">
-              <input type="checkbox" id="cod-enable" name="codEnabled">
-              <span class="toggle-card__switch" aria-hidden="true"></span>
-              <span class="toggle-card__text">Enable COD</span>
-            </label>
-          </div>
-
-          <div class="panel__grid panel__grid--controls">
+          <div class="field-row">
             <div class="field">
-              <label for="cod-service">COD Service</label>
-              <select id="cod-service" name="shippingOrderCODService.codServiceId">
-                <option selected>None</option>
-                <option>Cash Only</option>
-                <option>Certified Cheque</option>
-                <option>Cash or Certified Cheque</option>
+              <label for="from-city">City</label>
+              <input type="text" id="from-city" formControlName="fromCity" class="input">
+            </div>
+            <div class="field">
+              <label for="from-province">Province</label>
+              <select id="from-province" formControlName="fromProvince" class="input">
+                <option value="ON">ON — Ontario</option>
+                <option value="BC">BC — British Columbia</option>
+                <option value="AB">AB — Alberta</option>
+                <option value="QC">QC — Quebec</option>
               </select>
             </div>
+          </div>
+
+          <div class="field-row">
             <div class="field">
-              <label for="cod-amount">COD Amount <span class="unit">CAD</span></label>
-              <input type="number" id="cod-amount" name="shippingOrderCODService.codAmount" value="0.00" min="0" step="0.01">
+              <label for="from-postal">Postal Code</label>
+              <input type="text" id="from-postal" formControlName="fromPostal" class="input">
             </div>
             <div class="field">
-              <label for="cod-remit-to">Remit To</label>
-              <input type="text" id="cod-remit-to" name="shippingOrderCODService.remitTo" placeholder="Payee name">
+              <label for="from-country">Country</label>
+              <select id="from-country" formControlName="fromCountry" class="input">
+                <option value="CA">CA — Canada</option>
+                <option value="US">US — United States</option>
+                <option value="MX">MX — Mexico</option>
+              </select>
             </div>
           </div>
 
-          <p class="cod-block__note">COD Address <span class="optional">Optional — leave blank to use Ship From address</span></p>
-          <div class="panel__grid panel__grid--controls">
+          <div class="field-row">
             <div class="field">
-              <label for="cod-attention">Attention</label>
-              <input type="text" id="cod-attention" name="codAddress.attention" placeholder="Contact name">
+              <label for="from-phone">Phone</label>
+              <input type="tel" id="from-phone" formControlName="fromPhone" class="input">
             </div>
             <div class="field">
-              <label for="cod-address1">Address Line 1</label>
-              <input type="text" id="cod-address1" name="codAddress.address1" placeholder="Street address">
-            </div>
-            <div class="field">
-              <label for="cod-postal">Postal / Zip Code</label>
-              <input type="text" id="cod-postal" name="codAddress.postalCode" placeholder="Postal code">
-            </div>
-            <div class="field">
-              <label for="cod-phone">Phone</label>
-              <input type="tel" id="cod-phone" name="codAddress.phone" placeholder="Phone number">
+              <label for="from-email">Email</label>
+              <input type="email" id="from-email" formControlName="fromEmail" class="input">
             </div>
           </div>
-        </div>
-      </section>
+        </section>
 
-      <!-- SUBMIT -->
-      <div class="submit-row">
-        <p class="submit-row__hint">Rates are calculated instantly from live carrier feeds.</p>
-        <button type="submit" class="primary-btn">
-          Get Shipping Rates
-          <svg viewBox="0 0 24 24" width="18" height="18" fill="none"><path d="M5 12H19M19 12L13 6M19 12L13 18" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-        </button>
+        <!-- Ship To -->
+        <section class="card address-section" aria-labelledby="to-heading">
+          <h2 id="to-heading" class="section-heading">To</h2>
+
+          <div class="field">
+            <label for="to-attention">Attention</label>
+            <input type="text" id="to-attention" formControlName="toAttention" class="input">
+          </div>
+          <div class="field">
+            <label for="to-company">Company</label>
+            <input type="text" id="to-company" formControlName="toCompany" class="input">
+          </div>
+          <div class="field">
+            <label for="to-address1">Address Line 1</label>
+            <input type="text" id="to-address1" formControlName="toAddress1" class="input">
+          </div>
+          <div class="field">
+            <label for="to-address2">Address Line 2</label>
+            <input type="text" id="to-address2" formControlName="toAddress2" class="input" placeholder="Optional">
+          </div>
+
+          <div class="field-row">
+            <div class="field">
+              <label for="to-city">City</label>
+              <input type="text" id="to-city" formControlName="toCity" class="input">
+            </div>
+            <div class="field">
+              <label for="to-province">Province</label>
+              <select id="to-province" formControlName="toProvince" class="input">
+                <option value="ON">ON — Ontario</option>
+                <option value="BC">BC — British Columbia</option>
+                <option value="AB">AB — Alberta</option>
+                <option value="QC">QC — Quebec</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="field-row">
+            <div class="field">
+              <label for="to-postal">Postal Code</label>
+              <input type="text" id="to-postal" formControlName="toPostal" class="input">
+            </div>
+            <div class="field">
+              <label for="to-country">Country</label>
+              <select id="to-country" formControlName="toCountry" class="input">
+                <option value="CA">CA — Canada</option>
+                <option value="US">US — United States</option>
+                <option value="MX">MX — Mexico</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="field-row">
+            <div class="field">
+              <label for="to-phone">Phone</label>
+              <input type="tel" id="to-phone" formControlName="toPhone" class="input">
+            </div>
+          </div>
+        </section>
+
       </div>
     </form>
 
-    <!-- ============ RESULTS ============ -->
-    <section class="card panel results" aria-labelledby="results-heading">
-      <div class="section-head">
-        <span class="eyebrow">05 — Rates</span>
-        <h2 id="results-heading">Results</h2>
-        <span class="results__count">1 service returned</span>
-      </div>
+    <!-- Quote Results Table -->
+    <section class="card results-section" *ngIf="rates().length > 0" aria-labelledby="results-heading">
+      <h2 id="results-heading" class="section-heading">Quote Results</h2>
 
       <div class="table-wrap">
         <table class="rate-table">
           <thead>
             <tr>
               <th scope="col">Service Code</th>
-              <th scope="col" class="num">Actual Weight</th>
-              <th scope="col" class="num">Billable Weight</th>
-              <th scope="col" class="num">Dimensional Weight</th>
               <th scope="col" class="num">Charge</th>
-              <th scope="col">Currency</th>
+              <th scope="col" class="num">Fuel Surcharge</th>
               <th scope="col" class="num">Est. Transit Days</th>
-              <th scope="col" class="num">Total Packages</th>
-              <th scope="col" class="num">Volume</th>
-              <th scope="col">Volume Unit</th>
-              <th scope="col">Weight Unit</th>
             </tr>
           </thead>
           <tbody>
-            <tr>
-              <td data-label="Service Code"><span class="service-chip">EXP</span></td>
-              <td data-label="Actual Weight" class="num mono">0.5</td>
-              <td data-label="Billable Weight" class="num mono">0.5</td>
-              <td data-label="Dimensional Weight" class="num mono">0.3</td>
-              <td data-label="Charge" class="num mono charge">4.54</td>
-              <td data-label="Currency">CAD</td>
-              <td data-label="Est. Transit Days" class="num mono">3</td>
-              <td data-label="Total Packages" class="num mono">1</td>
-              <td data-label="Volume" class="num mono">1147.1</td>
-              <td data-label="Volume Unit">CMQ</td>
-              <td data-label="Weight Unit">KG</td>
-            </tr>
-            <tr class="rate-table__placeholder">
-              <td colspan="11">Additional carrier services will appear here once more rates are returned.</td>
+            <tr *ngFor="let rate of rates()"
+                (click)="selectRate(rate)"
+                [class.selected]="selectedRate() === rate"
+                class="rate-row">
+              <td>{{ rate.serviceCode }}</td>
+              <td class="num">${{ rate.charge.toFixed(2) }}</td>
+              <td class="num">{{ rate.fuelSurchargePercent }}%</td>
+              <td class="num">{{ rate.estTransitDays }} days</td>
             </tr>
           </tbody>
         </table>
       </div>
     </section>
 
+    <!-- Action Buttons -->
+    <section class="card actions-section">
+      <div class="button-group">
+        <button
+          type="button"
+          (click)="onQuote()"
+          [disabled]="quoteLoading() || form.invalid"
+          class="btn btn--primary">
+          <span *ngIf="!quoteLoading()">Get Quotes</span>
+          <span *ngIf="quoteLoading()">Loading...</span>
+        </button>
+
+        <button
+          type="button"
+          (click)="onShipment()"
+          [disabled]="!shipmentEnabled() || form.invalid"
+          class="btn btn--secondary">
+          <span *ngIf="!shipmentLoading()">Create Shipment</span>
+          <span *ngIf="shipmentLoading()">Loading...</span>
+        </button>
+      </div>
+    </section>
+
   </main>
 
   <footer class="app-footer">
-    <p>Freight Console — Rate Request Reference UI · Static mockup, no live data</p>
+    <p>Freight Console — Shipping Rate Request</p>
   </footer>
-
 </div>
-</body>
-</html>
