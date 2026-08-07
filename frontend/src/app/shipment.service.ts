@@ -1,13 +1,14 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { environment } from '../environments/environment';
 import { ShipmentRequest, ShipmentResponse } from './types';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ShipmentService {
-  private apiUrl = 'https://genesis.eshipper.com/api/shipment';
+  private apiUrl = `${environment.apiBaseUrl}/shipment`;
 
   constructor(private http: HttpClient) {}
 
