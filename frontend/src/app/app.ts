@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { QuoteService } from './quote.service';
 import { ShipmentService } from './shipment.service';
-import { Rate, QuoteRequest, ShipmentRequest } from './types';
+import { Rate, QuoteRequest, ShipmentRequest, ShippingOrderAddSvc } from './types';
 
 @Component({
   selector: 'app-root',
@@ -32,8 +32,9 @@ export class App {
   }
 
   private createForm(): FormGroup {
+    const tomorrow = this.getTomorrowDate();
     return this.fb.group({
-      scheduledShipDate: ['2026-08-06', Validators.required],
+      scheduledShipDate: [tomorrow, Validators.required],
       scheduledShipTime: ['11:00', Validators.required],
 
       // From
@@ -65,6 +66,8 @@ export class App {
     if (this.form.invalid || this.quoteLoading()) {
       return;
     }
+
+    console.log('Form Value:', this.form.value);
 
     this.errorMessage.set('');
     this.quoteLoading.set(true);
@@ -121,60 +124,86 @@ export class App {
 
   private buildQuoteRequest(): QuoteRequest {
     const formValue = this.form.value;
+    const countryFrom = formValue.fromCountry;
+    const provinceFrom = formValue.fromProvince;
+    const countryTo = formValue.toCountry;
+    const provinceTo = formValue.toProvince;
+
+    // Combine date and time: "YYYY-MM-DD HH:mm"
+    const scheduledShipDate = `${formValue.scheduledShipDate} ${formValue.scheduledShipTime}`;
+
     return {
-      scheduledShipDate: formValue.scheduledShipDate,
-      scheduledShipTime: formValue.scheduledShipTime,
+      scheduledShipDate,
       shipFrom: {
         attention: formValue.fromAttention,
         company: formValue.fromCompany,
         address1: formValue.fromAddress1,
-        address2: formValue.fromAddress2 || undefined,
         cityName: formValue.fromCity,
         provinceDTO: {
-          name: this.getProvinceName(formValue.fromProvince),
-          alpha2code: formValue.fromProvince
+          alpha2code: provinceFrom,
+          countryCode: countryFrom,
+          name: this.getProvinceCode(countryFrom, provinceFrom)
         },
         postalCode: formValue.fromPostal,
         countryDTO: {
-          name: this.getCountryName(formValue.fromCountry)
+          name: countryFrom
         },
-        phone: formValue.fromPhone,
-        email: formValue.fromEmail,
-        countryCode: formValue.fromCountry
+        phone: this.normalizePhone(formValue.fromPhone),
+        email: formValue.fromEmail || '',
+        countryCode: countryFrom,
+        countryName: this.getCountryName(countryFrom),
+        provinceName: this.getProvinceName(provinceFrom),
+        alphaNumericPostalCode: formValue.fromPostal
       },
       shipTo: {
         attention: formValue.toAttention,
         company: formValue.toCompany,
         address1: formValue.toAddress1,
-        address2: formValue.toAddress2 || undefined,
         cityName: formValue.toCity,
         provinceDTO: {
-          name: this.getProvinceName(formValue.toProvince),
-          alpha2code: formValue.toProvince
+          alpha2code: provinceTo,
+          countryCode: countryTo,
+          name: this.getProvinceCode(countryTo, provinceTo)
         },
         postalCode: formValue.toPostal,
         countryDTO: {
-          name: this.getCountryName(formValue.toCountry)
+          name: countryTo
         },
-        phone: formValue.toPhone,
-        countryCode: formValue.toCountry
+        phone: this.normalizePhone(formValue.toPhone),
+        email: formValue.toEmail || '',
+        countryCode: countryTo,
+        countryName: this.getCountryName(countryTo),
+        provinceName: this.getProvinceName(provinceTo),
+        alphaNumericPostalCode: formValue.toPostal
       },
-      // Send default values for fields not exposed in UI
-      packageTypeDTO: 'Package',
-      shipmentPackageUnits: 'Imperial',
+      packageTypeDTO: {
+        name: 'Package'
+      },
+      shipmentPackageUnits: {
+        name: 'Imperial',
+        system: 'IMPERIAL'
+      },
       shipmentPackages: [
         {
           description: 'eCommerce',
           length: 7,
           width: 5,
           height: 2,
-          weight: 1,
-          quantity: 1
+          weight: 1
         }
       ],
-      shippingOrderAddSvc: {},
+      shippingOrderAddSvc: this.getDefaultAddSvc(),
+      shippingOrderCODService: {
+        codServiceId: 0
+      },
+      codAddress: null,
       currencyCode: 'CAD'
     };
+  }
+
+  private getProvinceCode(countryCode: string, provinceCode: string): string {
+    // Format: "CA-ON", "CA-BC", etc.
+    return `${countryCode}-${provinceCode}`;
   }
 
   private getProvinceName(code: string): string {
@@ -194,6 +223,58 @@ export class App {
       'MX': 'Mexico'
     };
     return map[code] || code;
+  }
+
+  private normalizePhone(phone: string): string {
+    // Remove all non-digit characters
+    return phone.replace(/\D/g, '');
+  }
+
+  private getTomorrowDate(): string {
+    const today = new Date();
+    const tomorrow = new Date(today);
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    const year = tomorrow.getFullYear();
+    const month = String(tomorrow.getMonth() + 1).padStart(2, '0');
+    const day = String(tomorrow.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  }
+
+  private getDefaultAddSvc(): ShippingOrderAddSvc {
+    return {
+      ambientTemperatureRequired: false,
+      coldChainRequired: false,
+      crossBorderFee: false,
+      customsFreight: false,
+      dangerousGoods: 0,
+      deliveryAppt: false,
+      docsOnly: false,
+      excessLength: false,
+      exibitionSite: false,
+      heated: false,
+      hold: false,
+      homelandSecurity: false,
+      inBondFee: false,
+      insideDelivery: false,
+      insidePickup: false,
+      keepCoolRequired: false,
+      limitedAccess: false,
+      militaryBaseDelivery: false,
+      pierCharge: false,
+      returnService: false,
+      satDelivery: false,
+      saturdayPickup: false,
+      shipFromTailgate: false,
+      shipToTailgate: false,
+      signatureRequired: 0,
+      singleShipment: false,
+      fbaApproved: false,
+      sortSegregate: false,
+      noSafeDrop: false,
+      insuranceType: 0,
+      insuredAmount: 0.0,
+      fbaapproved: false
+    };
   }
 
   private downloadPDF(trackingNumber: string, pdfData: string | Blob | ArrayBuffer | undefined): void {
