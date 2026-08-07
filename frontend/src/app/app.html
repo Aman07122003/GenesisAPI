@@ -22,22 +22,25 @@
       {{ errorMessage() }}
     </div>
 
-    <!-- Date & Time -->
-    <section class="card date-time-section" aria-label="Shipment Date and Time">
-      <div class="field-row">
-        <div class="field">
-          <label for="ship-date">Ship Date</label>
-          <input type="date" id="ship-date" formControlName="scheduledShipDate" class="input">
-        </div>
-        <div class="field">
-          <label for="ship-time">Ship Time</label>
-          <input type="time" id="ship-time" formControlName="scheduledShipTime" class="input">
-        </div>
-      </div>
-    </section>
+    <!-- Form: Date & Time + From / To -->
+    <form [formGroup]="form" class="form-wrapper">
 
-    <!-- From / To -->
-    <form [formGroup]="form" class="route-section">
+      <!-- Date & Time -->
+      <section class="card date-time-section" aria-label="Shipment Date and Time">
+        <div class="field-row">
+          <div class="field">
+            <label for="ship-date">Ship Date</label>
+            <input type="date" id="ship-date" formControlName="scheduledShipDate" class="input">
+          </div>
+          <div class="field">
+            <label for="ship-time">Ship Time</label>
+            <input type="time" id="ship-time" formControlName="scheduledShipTime" class="input">
+          </div>
+        </div>
+      </section>
+
+      <!-- From / To -->
+      <div class="route-section">
       <div class="route-grid">
 
         <!-- Ship From -->
@@ -164,6 +167,7 @@
           </div>
         </section>
 
+      </div>
       </div>
     </form>
 
