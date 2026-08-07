@@ -2,9 +2,6 @@
   "/api": {
     "target": "https://genesis.eshipper.com",
     "secure": true,
-    "changeOrigin": true,
-    "pathRewrite": {
-      "^/api": "/api"
-    }
+    "changeOrigin": true
   }
 }
