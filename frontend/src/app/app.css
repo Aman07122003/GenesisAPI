@@ -1,11 +1,58 @@
 /* ============================================================
-   Freight Console — Component Styles
+   Freight Console — Design Tokens
    ============================================================ */
 
 .app-shell {
-  max-width: 1000px;
+  --ink-900: #0B1526;
+  --ink-800: #142238;
+  --ink-700: #1D2E4A;
+  --steel-500: #5B6B85;
+  --steel-300: #94A0B4;
+  --line-200: #E3E6EC;
+  --line-100: #EEF0F4;
+  --surface-0: #F6F7F9;
+  --surface-1: #FFFFFF;
+
+  --signal-500: #FF5A1F;
+  --signal-600: #E24B15;
+  --signal-100: #FFF1E9;
+
+  --success-500: #1E9A54;
+  --success-100: #E7F7EE;
+  --danger-500: #D64545;
+  --danger-100: #FCEBEB;
+
+  --radius-sm: 6px;
+  --radius-md: 10px;
+
+  --shadow-card: 0 1px 2px rgba(11, 21, 38, 0.05), 0 1px 1px rgba(11, 21, 38, 0.04);
+  --shadow-raised: 0 8px 24px rgba(11, 21, 38, 0.10);
+
+  --font-display: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --font-body: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --font-mono: ui-monospace, "SF Mono", "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+
+  background: var(--surface-0);
+  color: var(--ink-900);
+  font-family: var(--font-body);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+.app-shell {
+  max-width: 1080px;
   margin: 0 auto;
-  padding: 0 20px 40px;
+  padding: 0 var(--space-5) var(--space-8);
 }
 
 /* ============================================================
@@ -14,15 +61,17 @@
 .topbar {
   display: flex;
   align-items: center;
-  padding: 24px 0 20px;
+  justify-content: space-between;
+  gap: var(--space-4);
+  padding: var(--space-6) 0 var(--space-5);
   border-bottom: 1px solid var(--line-200);
-  margin-bottom: 24px;
+  margin-bottom: var(--space-6);
 }
 
 .topbar__brand {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: var(--space-3);
 }
 
 .topbar__mark {
@@ -62,6 +111,31 @@
   font-size: 18px;
   font-weight: 600;
   color: var(--ink-900);
+  margin: 0;
+}
+
+.topbar__status {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  color: var(--steel-500);
+  padding: 6px 12px;
+  border: 1px solid var(--line-200);
+  border-radius: 999px;
+  background: var(--surface-1);
+}
+
+.status-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--success-500);
+  box-shadow: 0 0 0 3px var(--success-100);
+  flex: none;
 }
 
 /* ============================================================
@@ -70,7 +144,7 @@
 .layout {
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: var(--space-5);
 }
 
 .card {
@@ -78,31 +152,77 @@
   border: 1px solid var(--line-200);
   border-radius: var(--radius-md);
   box-shadow: var(--shadow-card);
-  padding: 20px;
+  padding: var(--space-5);
+}
+
+.workspace-label {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-2);
+  padding: 0 var(--space-1);
+}
+
+.workspace-label__eyebrow {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--signal-600);
+}
+
+.workspace-label__text {
+  font-family: var(--font-display);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  color: var(--steel-500);
 }
 
 /* ============================================================
    Alert
    ============================================================ */
 .alert {
-  padding: 12px 16px;
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-2);
+  padding: var(--space-3) var(--space-4);
   border-radius: var(--radius-sm);
   font-size: 14px;
+  line-height: 1.4;
 }
 
 .alert--error {
-  background: var(--signal-100);
-  border: 1px solid var(--signal-500);
-  color: var(--signal-600);
+  background: var(--danger-100);
+  border: 1px solid rgba(214, 69, 69, 0.35);
+  color: var(--danger-500);
+}
+
+.alert__icon {
+  width: 18px;
+  height: 18px;
+  flex: none;
+  margin-top: 1px;
 }
 
 /* ============================================================
    Form Elements
    ============================================================ */
+.form-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+}
+
 .field {
   display: flex;
   flex-direction: column;
   gap: 6px;
+}
+
+.field-form {
+  margin-bottom: var(--space-3);
+  
 }
 
 .field label {
@@ -114,21 +234,22 @@
 
 .input {
   width: 100%;
-  padding: 9px 11px;
+  height: 42px;
+  padding: 0 var(--space-3);
   background: var(--surface-0);
   border: 1px solid var(--line-200);
   border-radius: var(--radius-sm);
   color: var(--ink-900);
   font-size: 14px;
   font-family: var(--font-body);
-  transition: border-color 0.15s ease, background 0.15s ease;
+  transition: border-color 0.15s ease, background 0.15s ease, box-shadow 0.15s ease;
 }
 
 .input:hover {
   border-color: var(--steel-300);
 }
 
-.input:focus {
+.input:focus-visible {
   outline: none;
   border-color: var(--signal-500);
   background: var(--surface-1);
@@ -148,67 +269,230 @@ select.input {
 .field-row {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 12px;
+  gap: var(--space-3);
+}
+
+.field-row + .field-row {
+  margin-top: var(--space-3);
+}
+
+/* ============================================================
+   Field Groups (Party / Address / Location / Contact)
+   ============================================================ */
+.field-group + .field-group {
+  margin-top: var(--space-5);
+  padding-top: var(--space-5);
+  border-top: 1px solid var(--line-100);
+}
+
+.field-group__title {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: var(--steel-300);
+  margin: 0 0 var(--space-3) 0;
 }
 
 /* ============================================================
    Sections
    ============================================================ */
 .section-heading {
-  font-size: 16px;
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: 15px;
   font-weight: 600;
   color: var(--ink-900);
-  margin: 0 0 16px 0;
+  margin: 0 0 var(--space-5) 0;
   font-family: var(--font-display);
 }
 
+.section-heading--plain {
+  margin-bottom: 0;
+}
+
+.section-heading__meta {
+  margin-left: auto;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--steel-300);
+}
+
+.section-badge {
+  width: 26px;
+  height: 26px;
+  border-radius: var(--radius-sm);
+  background: var(--line-100);
+  color: var(--steel-500);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+}
+
+.section-badge svg {
+  width: 15px;
+  height: 15px;
+}
+
+.section-badge--accent {
+  background: var(--signal-100);
+  color: var(--signal-600);
+}
+
+/* ============================================================
+   Panel heading (Schedule)
+   ============================================================ */
+.panel-heading {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-family: var(--font-display);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  margin-bottom: var(--space-4);
+}
+
+.panel-heading__icon {
+  width: 16px;
+  height: 16px;
+}
+
+.panel-heading--dark {
+  color: rgba(255, 255, 255, 0.85);
+}
+
+/* ============================================================
+   Date & Time panel
+   ============================================================ */
 .date-time-section {
   background: linear-gradient(135deg, var(--ink-900) 0%, var(--ink-700) 100%);
   border: none;
-  padding: 16px;
+  padding: var(--space-5);
 }
 
 .date-time-section .field label {
-  color: rgba(255, 255, 255, 0.7);
+  color: rgba(255, 255, 255, 0.65);
 }
 
 .date-time-section .input {
   background: rgba(255, 255, 255, 0.08);
-  border-color: rgba(255, 255, 255, 0.12);
+  border-color: rgba(255, 255, 255, 0.14);
   color: #fff;
+  color-scheme: dark;
 }
 
-.date-time-section .input:focus {
+.date-time-section .input:hover {
+  border-color: rgba(255, 255, 255, 0.28);
+}
+
+.date-time-section .input:focus-visible {
   border-color: var(--signal-500);
   background: rgba(255, 255, 255, 0.12);
-  box-shadow: 0 0 0 3px rgba(255, 90, 31, 0.15);
+  box-shadow: 0 0 0 3px rgba(255, 90, 31, 0.25);
 }
 
-.route-section {
-  /* No card styling for the form container itself */
+.date-time-section .field-row {
+  grid-template-columns: 1fr 1fr;
 }
 
+/* ============================================================
+   Route section
+   ============================================================ */
 .route-grid {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 20px;
+  grid-template-columns: 1fr 64px 1fr;
+  align-items: stretch;
+  gap: 0 var(--space-4);
 }
 
 .address-section {
   /* Already has .card styles */
 }
 
-.address-section .field {
-  margin-bottom: 12px;
+/* Route connector — signature decorative element */
+.route-connector {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: var(--space-6) 0;
 }
 
-.results-section {
-  /* Already has .card styles */
+.route-connector__line {
+  width: 1px;
+  flex: 1;
+  min-height: 24px;
+  background-image: linear-gradient(var(--line-200) 60%, transparent 40%);
+  background-size: 1px 8px;
+  background-repeat: repeat-y;
+}
+
+.route-connector__node {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  border: 2px solid var(--steel-300);
+  background: var(--surface-1);
+  flex: none;
+}
+
+.route-connector__node--start {
+  border-color: var(--steel-500);
+}
+
+.route-connector__node--end {
+  border-color: var(--signal-500);
+  background: var(--signal-500);
+}
+
+.route-connector__glyph {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--ink-900);
+  color: var(--signal-500);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  box-shadow: var(--shadow-raised);
+}
+
+.route-connector__glyph svg {
+  width: 17px;
+  height: 17px;
 }
 
 /* ============================================================
-   Table
+   Results
    ============================================================ */
+.results-heading-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--space-4);
+}
+
+.results-count {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  color: var(--steel-500);
+  background: var(--line-100);
+  padding: 4px 10px;
+  border-radius: 999px;
+}
+
 .table-wrap {
   overflow-x: auto;
   border: 1px solid var(--line-200);
@@ -219,6 +503,7 @@ select.input {
 .rate-table {
   width: 100%;
   border-collapse: collapse;
+  min-width: 520px;
 }
 
 .rate-table thead {
@@ -234,7 +519,7 @@ select.input {
   letter-spacing: 0.06em;
   text-transform: uppercase;
   color: var(--steel-500);
-  padding: 12px 14px;
+  padding: var(--space-3) var(--space-4);
   white-space: nowrap;
 }
 
@@ -243,10 +528,15 @@ select.input {
 }
 
 .rate-table td {
-  padding: 12px 14px;
+  padding: var(--space-3) var(--space-4);
   border-bottom: 1px solid var(--line-100);
   font-size: 14px;
   color: var(--ink-800);
+  vertical-align: middle;
+}
+
+.rate-table tbody tr:last-child td {
+  border-bottom: none;
 }
 
 .rate-table td.num {
@@ -254,21 +544,64 @@ select.input {
   font-family: var(--font-mono);
 }
 
+.num--charge {
+  font-weight: 600;
+  color: var(--ink-900);
+}
+
+.transit-pill {
+  display: inline-block;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--steel-500);
+  background: var(--line-100);
+  padding: 2px 8px;
+  border-radius: 999px;
+}
+
 .rate-row {
   cursor: pointer;
   transition: background 0.15s ease;
+  position: relative;
 }
 
 .rate-row:hover {
   background: rgba(255, 90, 31, 0.04);
 }
 
+.rate-row__selector {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  border: 1.5px solid var(--line-200);
+  margin-right: var(--space-2);
+  vertical-align: middle;
+  transition: border-color 0.15s ease, background 0.15s ease;
+}
+
 .rate-row.selected {
   background: var(--signal-100);
+  box-shadow: inset 3px 0 0 var(--signal-500);
 }
 
 .rate-row.selected td {
   font-weight: 600;
+  color: var(--signal-600);
+}
+
+.rate-row.selected .num--charge {
+  color: var(--signal-600);
+}
+
+.rate-row.selected .route-connector__node,
+.rate-row.selected .rate-row__selector {
+  border-color: var(--signal-500);
+  background: var(--signal-500);
+}
+
+.rate-row.selected .transit-pill {
+  background: rgba(255, 90, 31, 0.14);
   color: var(--signal-600);
 }
 
@@ -278,22 +611,26 @@ select.input {
 .actions-section {
   display: flex;
   justify-content: center;
-  gap: 12px;
+  position: sticky;
+  bottom: var(--space-4);
+  z-index: 5;
 }
 
 .button-group {
   display: flex;
-  gap: 12px;
+  gap: var(--space-3);
   flex-wrap: wrap;
   justify-content: center;
+  width: 100%;
 }
 
 .btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
-  padding: 10px 20px;
+  gap: var(--space-2);
+  padding: 0 var(--space-5);
+  height: 44px;
   border: none;
   border-radius: var(--radius-sm);
   font-size: 14px;
@@ -301,14 +638,14 @@ select.input {
   font-family: var(--font-body);
   letter-spacing: 0.01em;
   cursor: pointer;
-  transition: background 0.15s ease, transform 0.15s ease, opacity 0.15s ease;
-  min-width: 140px;
+  transition: background 0.16s ease, transform 0.12s ease, box-shadow 0.16s ease, opacity 0.16s ease;
+  min-width: 160px;
 }
 
 .btn--primary {
   background: var(--signal-500);
   color: #fff;
-  box-shadow: 0 4px 12px rgba(255, 90, 31, 0.3);
+  box-shadow: 0 4px 12px rgba(255, 90, 31, 0.28);
 }
 
 .btn--primary:hover:not(:disabled) {
@@ -321,18 +658,60 @@ select.input {
 }
 
 .btn--secondary {
-  background: var(--ink-800);
+  background: var(--line-100);
+  color: var(--steel-500);
+  box-shadow: none;
+}
+
+.btn--secondary:not(:disabled) {
+  background: var(--ink-900);
   color: #fff;
-  box-shadow: 0 2px 8px rgba(15, 27, 45, 0.15);
+  box-shadow: 0 2px 10px rgba(11, 21, 38, 0.2);
 }
 
 .btn--secondary:hover:not(:disabled) {
-  background: var(--ink-900);
+  background: var(--ink-700);
+  transform: translateY(-1px);
 }
 
 .btn:disabled {
-  opacity: 0.5;
+  opacity: 0.55;
   cursor: not-allowed;
+}
+
+.btn:focus-visible {
+  outline: 2px solid var(--signal-500);
+  outline-offset: 2px;
+}
+
+.btn__loading {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.spinner {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, 0.35);
+  border-top-color: #fff;
+  animation: spin 0.7s linear infinite;
+  flex: none;
+}
+
+.btn--secondary:not(:disabled) .spinner {
+  border-color: rgba(255, 255, 255, 0.35);
+  border-top-color: #fff;
+}
+
+.btn--secondary:disabled .spinner {
+  border-color: rgba(91, 107, 133, 0.3);
+  border-top-color: var(--steel-500);
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
 }
 
 /* ============================================================
@@ -340,28 +719,59 @@ select.input {
    ============================================================ */
 .app-footer {
   text-align: center;
-  padding: 24px 0 0;
+  padding: var(--space-6) 0 0;
   color: var(--steel-300);
   font-size: 12px;
   font-family: var(--font-mono);
   border-top: 1px solid var(--line-200);
-  margin-top: 24px;
+  margin-top: var(--space-6);
 }
 
 /* ============================================================
    Responsive
    ============================================================ */
-@media (max-width: 768px) {
-  .app-shell {
-    padding: 0 16px 32px;
-  }
-
+@media (max-width: 900px) {
   .route-grid {
     grid-template-columns: 1fr;
   }
 
+  .route-connector {
+    flex-direction: row;
+    padding: var(--space-4) 0;
+  }
+
+  .route-connector__line {
+    width: auto;
+    height: 1px;
+    flex: 1;
+    min-height: 0;
+    min-width: 24px;
+    background-image: linear-gradient(to right, var(--line-200) 60%, transparent 40%);
+    background-size: 8px 1px;
+    background-repeat: repeat-x;
+  }
+}
+
+@media (max-width: 768px) {
+  .app-shell {
+    padding: 0 var(--space-4) var(--space-6);
+  }
+
+  .topbar {
+    flex-wrap: wrap;
+    gap: var(--space-3);
+  }
+
   .field-row {
     grid-template-columns: 1fr;
+  }
+
+  .field-row + .field-row {
+    margin-top: var(--space-3);
+  }
+
+  .field-row .field + .field {
+    margin-top: var(--space-3);
   }
 
   .button-group {
@@ -370,5 +780,31 @@ select.input {
 
   .btn {
     width: 100%;
+  }
+
+  .actions-section {
+    position: static;
+  }
+}
+
+@media (max-width: 480px) {
+  .topbar__status span:last-child {
+    display: none;
+  }
+
+  .results-heading-row {
+    flex-wrap: wrap;
+    gap: var(--space-2);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .btn,
+  .rate-row,
+  .input {
+    transition: none;
+  }
+  .spinner {
+    animation-duration: 1.4s;
   }
 }

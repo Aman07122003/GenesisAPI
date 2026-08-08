@@ -13,20 +13,42 @@
         <h1>Shipping Rate Request</h1>
       </div>
     </div>
+    <div class="topbar__status" aria-hidden="true">
+      <span class="status-dot"></span>
+      <span>Rate engine connected</span>
+    </div>
   </header>
 
   <main class="layout">
 
     <!-- Error Message -->
     <div *ngIf="errorMessage()" class="alert alert--error" role="alert">
-      {{ errorMessage() }}
+      <svg class="alert__icon" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+        <circle cx="10" cy="10" r="8" stroke="currentColor" stroke-width="1.4"/>
+        <path d="M10 6.5V10.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+        <circle cx="10" cy="13.25" r="0.9" fill="currentColor"/>
+      </svg>
+      <span>{{ errorMessage() }}</span>
     </div>
 
     <!-- Form: Date & Time + From / To -->
     <form [formGroup]="form" class="form-wrapper">
 
+      <div class="workspace-label">
+        <span class="workspace-label__eyebrow">Step 1</span>
+        <span class="workspace-label__text">Shipment details</span>
+      </div>
+
       <!-- Date & Time -->
       <section class="card date-time-section" aria-label="Shipment Date and Time">
+        <div class="panel-heading panel-heading--dark">
+          <svg class="panel-heading__icon" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+            <rect x="3" y="4.5" width="14" height="12" rx="1.6" stroke="currentColor" stroke-width="1.4"/>
+            <path d="M3 8H17" stroke="currentColor" stroke-width="1.4"/>
+            <path d="M6.5 2.5V5.5M13.5 2.5V5.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
+          </svg>
+          <span>Schedule</span>
+        </div>
         <div class="field-row">
           <div class="field">
             <label for="ship-date">Ship Date</label>
@@ -39,130 +61,195 @@
         </div>
       </section>
 
+      <div class="workspace-label">
+        <span class="workspace-label__eyebrow">Step 2</span>
+        <span class="workspace-label__text">Route</span>
+      </div>
+
       <!-- From / To -->
       <div class="route-section">
       <div class="route-grid">
 
         <!-- Ship From -->
         <section class="card address-section" aria-labelledby="from-heading">
-          <h2 id="from-heading" class="section-heading">From</h2>
+          <h2 id="from-heading" class="section-heading">
+            <span class="section-badge">
+              <svg viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                <circle cx="8" cy="8" r="6.4" stroke="currentColor" stroke-width="1.4"/>
+                <circle cx="8" cy="8" r="2" fill="currentColor"/>
+              </svg>
+            </span>
+            <span>From</span>
+            <span class="section-heading__meta">Origin</span>
+          </h2>
 
-          <div class="field">
-            <label for="from-attention">Attention</label>
-            <input type="text" id="from-attention" formControlName="fromAttention" class="input">
-          </div>
-          <div class="field">
-            <label for="from-company">Company</label>
-            <input type="text" id="from-company" formControlName="fromCompany" class="input">
-          </div>
-          <div class="field">
-            <label for="from-address1">Address Line 1</label>
-            <input type="text" id="from-address1" formControlName="fromAddress1" class="input">
-          </div>
-          <div class="field">
-            <label for="from-address2">Address Line 2</label>
-            <input type="text" id="from-address2" formControlName="fromAddress2" class="input" placeholder="Optional">
-          </div>
-
-          <div class="field-row">
+          <div class="field-group">
+            <h3 class="field-group__title">Party</h3>
             <div class="field">
-              <label for="from-city">City</label>
-              <input type="text" id="from-city" formControlName="fromCity" class="input">
+              <label for="from-attention">Attention</label>
+              <input type="text" id="from-attention" formControlName="fromAttention" class="input">
             </div>
             <div class="field">
-              <label for="from-province">Province</label>
-              <select id="from-province" formControlName="fromProvince" class="input">
-                <option value="ON">ON — Ontario</option>
-                <option value="BC">BC — British Columbia</option>
-                <option value="AB">AB — Alberta</option>
-                <option value="QC">QC — Quebec</option>
-              </select>
+              <label for="from-company">Company</label>
+              <input type="text" id="from-company" formControlName="fromCompany" class="input">
             </div>
           </div>
 
-          <div class="field-row">
+          <div class="field-group">
+            <h3 class="field-group__title">Address</h3>
             <div class="field">
-              <label for="from-postal">Postal Code</label>
-              <input type="text" id="from-postal" formControlName="fromPostal" class="input">
+              <label for="from-address1">Address Line 1</label>
+              <input type="text" id="from-address1" formControlName="fromAddress1" class="input">
             </div>
-            <div class="field">
-              <label for="from-country">Country</label>
-              <select id="from-country" formControlName="fromCountry" class="input">
-                <option value="CA">CA — Canada</option>
-                <option value="US">US — United States</option>
-                <option value="MX">MX — Mexico</option>
-              </select>
+            <div class="field field-form">
+              <label for="from-address2">Address Line 2</label>
+              <input type="text" id="from-address2" formControlName="fromAddress2" class="input" placeholder="Optional">
             </div>
           </div>
 
-          <div class="field-row">
-            <div class="field">
-              <label for="from-phone">Phone</label>
-              <input type="tel" id="from-phone" formControlName="fromPhone" class="input">
+          <div class="field-group">
+            <h3 class="field-group__title">Location</h3>
+            <div class="field-row">
+              <div class="field">
+                <label for="from-city">City</label>
+                <input type="text" id="from-city" formControlName="fromCity" class="input">
+              </div>
+              <div class="field">
+                <label for="from-province">Province</label>
+                <select id="from-province" formControlName="fromProvince" class="input">
+                  <option value="ON">ON — Ontario</option>
+                  <option value="BC">BC — British Columbia</option>
+                  <option value="AB">AB — Alberta</option>
+                  <option value="QC">QC — Quebec</option>
+                </select>
+              </div>
             </div>
-            <div class="field">
-              <label for="from-email">Email</label>
-              <input type="email" id="from-email" formControlName="fromEmail" class="input">
+
+            <div class="field-row">
+              <div class="field">
+                <label for="from-postal">Postal Code</label>
+                <input type="text" id="from-postal" formControlName="fromPostal" class="input">
+              </div>
+              <div class="field">
+                <label for="from-country">Country</label>
+                <select id="from-country" formControlName="fromCountry" class="input">
+                  <option value="CA">CA — Canada</option>
+                  <option value="US">US — United States</option>
+                  <option value="MX">MX — Mexico</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <div class="field-group">
+            <h3 class="field-group__title">Contact</h3>
+            <div class="field-row">
+              <div class="field">
+                <label for="from-phone">Phone</label>
+                <input type="tel" id="from-phone" formControlName="fromPhone" class="input">
+              </div>
+              <div class="field">
+                <label for="from-email">Email</label>
+                <input type="email" id="from-email" formControlName="fromEmail" class="input">
+              </div>
             </div>
           </div>
         </section>
 
+        <!-- Route connector (decorative only) -->
+        <div class="route-connector" aria-hidden="true">
+          <span class="route-connector__node route-connector__node--start"></span>
+          <span class="route-connector__line"></span>
+          <span class="route-connector__glyph">
+            <svg viewBox="0 0 20 20" fill="none">
+              <path d="M2.5 13V6.5C2.5 6.22 2.72 6 3 6H11C11.28 6 11.5 6.22 11.5 6.5V13" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/>
+              <path d="M11.5 8.5H14.8L17.5 11V13H11.5V8.5Z" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/>
+              <circle cx="5.5" cy="13.5" r="1.3" stroke="currentColor" stroke-width="1.3"/>
+              <circle cx="14.5" cy="13.5" r="1.3" stroke="currentColor" stroke-width="1.3"/>
+            </svg>
+          </span>
+          <span class="route-connector__line"></span>
+          <span class="route-connector__node route-connector__node--end"></span>
+        </div>
+
         <!-- Ship To -->
         <section class="card address-section" aria-labelledby="to-heading">
-          <h2 id="to-heading" class="section-heading">To</h2>
+          <h2 id="to-heading" class="section-heading">
+            <span class="section-badge section-badge--accent">
+              <svg viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                <path d="M8 14.5C8 14.5 13 10.2 13 6.6C13 3.9 10.76 1.83 8 1.83C5.24 1.83 3 3.9 3 6.6C3 10.2 8 14.5 8 14.5Z" stroke="currentColor" stroke-width="1.4"/>
+                <circle cx="8" cy="6.5" r="1.7" stroke="currentColor" stroke-width="1.4"/>
+              </svg>
+            </span>
+            <span>To</span>
+            <span class="section-heading__meta">Destination</span>
+          </h2>
 
-          <div class="field">
-            <label for="to-attention">Attention</label>
-            <input type="text" id="to-attention" formControlName="toAttention" class="input">
-          </div>
-          <div class="field">
-            <label for="to-company">Company</label>
-            <input type="text" id="to-company" formControlName="toCompany" class="input">
-          </div>
-          <div class="field">
-            <label for="to-address1">Address Line 1</label>
-            <input type="text" id="to-address1" formControlName="toAddress1" class="input">
-          </div>
-          <div class="field">
-            <label for="to-address2">Address Line 2</label>
-            <input type="text" id="to-address2" formControlName="toAddress2" class="input" placeholder="Optional">
-          </div>
-
-          <div class="field-row">
+          <div class="field-group">
+            <h3 class="field-group__title">Party</h3>
             <div class="field">
-              <label for="to-city">City</label>
-              <input type="text" id="to-city" formControlName="toCity" class="input">
+              <label for="to-attention">Attention</label>
+              <input type="text" id="to-attention" formControlName="toAttention" class="input">
             </div>
             <div class="field">
-              <label for="to-province">Province</label>
-              <select id="to-province" formControlName="toProvince" class="input">
-                <option value="ON">ON — Ontario</option>
-                <option value="BC">BC — British Columbia</option>
-                <option value="AB">AB — Alberta</option>
-                <option value="QC">QC — Quebec</option>
-              </select>
+              <label for="to-company">Company</label>
+              <input type="text" id="to-company" formControlName="toCompany" class="input">
             </div>
           </div>
 
-          <div class="field-row">
+          <div class="field-group">
+            <h3 class="field-group__title">Address</h3>
             <div class="field">
-              <label for="to-postal">Postal Code</label>
-              <input type="text" id="to-postal" formControlName="toPostal" class="input">
+              <label for="to-address1">Address Line 1</label>
+              <input type="text" id="to-address1" formControlName="toAddress1" class="input">
             </div>
-            <div class="field">
-              <label for="to-country">Country</label>
-              <select id="to-country" formControlName="toCountry" class="input">
-                <option value="CA">CA — Canada</option>
-                <option value="US">US — United States</option>
-                <option value="MX">MX — Mexico</option>
-              </select>
+            <div class="field field-form">
+              <label for="to-address2">Address Line 2</label>
+              <input type="text" id="to-address2" formControlName="toAddress2" class="input" placeholder="Optional">
             </div>
           </div>
 
-          <div class="field-row">
-            <div class="field">
-              <label for="to-phone">Phone</label>
-              <input type="tel" id="to-phone" formControlName="toPhone" class="input">
+          <div class="field-group">
+            <h3 class="field-group__title">Location</h3>
+            <div class="field-row">
+              <div class="field">
+                <label for="to-city">City</label>
+                <input type="text" id="to-city" formControlName="toCity" class="input">
+              </div>
+              <div class="field">
+                <label for="to-province">Province</label>
+                <select id="to-province" formControlName="toProvince" class="input">
+                  <option value="ON">ON — Ontario</option>
+                  <option value="BC">BC — British Columbia</option>
+                  <option value="AB">AB — Alberta</option>
+                  <option value="QC">QC — Quebec</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="field-row">
+              <div class="field">
+                <label for="to-postal">Postal Code</label>
+                <input type="text" id="to-postal" formControlName="toPostal" class="input">
+              </div>
+              <div class="field">
+                <label for="to-country">Country</label>
+                <select id="to-country" formControlName="toCountry" class="input">
+                  <option value="CA">CA — Canada</option>
+                  <option value="US">US — United States</option>
+                  <option value="MX">MX — Mexico</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <div class="field-group">
+            <h3 class="field-group__title">Contact</h3>
+            <div class="field-row">
+              <div class="field">
+                <label for="to-phone">Phone</label>
+                <input type="tel" id="to-phone" formControlName="toPhone" class="input">
+              </div>
             </div>
           </div>
         </section>
@@ -171,9 +258,17 @@
       </div>
     </form>
 
+    <div class="workspace-label">
+      <span class="workspace-label__eyebrow">Step 3</span>
+      <span class="workspace-label__text">Available rates</span>
+    </div>
+
     <!-- Quote Results Table -->
     <section class="card results-section" *ngIf="rates().length > 0" aria-labelledby="results-heading">
-      <h2 id="results-heading" class="section-heading">Quote Results</h2>
+      <div class="results-heading-row">
+        <h2 id="results-heading" class="section-heading section-heading--plain">Quote Results</h2>
+        <span class="results-count">{{ rates().length }} rate{{ rates().length === 1 ? '' : 's' }}</span>
+      </div>
 
       <div class="table-wrap">
         <table class="rate-table">
@@ -190,10 +285,15 @@
                 (click)="selectRate(rate)"
                 [class.selected]="selectedRate() === rate"
                 class="rate-row">
-              <td>{{ rate.serviceCode }}</td>
-              <td class="num">${{ rate.charge.toFixed(2) }}</td>
+              <td>
+                <span class="rate-row__selector" aria-hidden="true"></span>
+                {{ rate.serviceCode }}
+              </td>
+              <td class="num num--charge">${{ rate.charge.toFixed(2) }}</td>
               <td class="num">{{ rate.fuelSurchargePercent }}%</td>
-              <td class="num">{{ rate.estTransitDays }} days</td>
+              <td class="num">
+                <span class="transit-pill">{{ rate.estTransitDays }} days</span>
+              </td>
             </tr>
           </tbody>
         </table>
@@ -209,7 +309,10 @@
           [disabled]="quoteLoading() || form.invalid"
           class="btn btn--primary">
           <span *ngIf="!quoteLoading()">Get Quotes</span>
-          <span *ngIf="quoteLoading()">Loading...</span>
+          <span *ngIf="quoteLoading()" class="btn__loading">
+            <span class="spinner" aria-hidden="true"></span>
+            Loading...
+          </span>
         </button>
 
         <button
@@ -218,7 +321,10 @@
           [disabled]="!shipmentEnabled() || form.invalid"
           class="btn btn--secondary">
           <span *ngIf="!shipmentLoading()">Create Shipment</span>
-          <span *ngIf="shipmentLoading()">Loading...</span>
+          <span *ngIf="shipmentLoading()" class="btn__loading">
+            <span class="spinner" aria-hidden="true"></span>
+            Loading...
+          </span>
         </button>
       </div>
     </section>

@@ -1,47 +1,68 @@
-// Address/Location types
+// ============================================================
+// Address / Location
+// ============================================================
+
 export interface AddressInfo {
   attention: string;
   company: string;
   address1: string;
   address2?: string;
+
+  postalCode: string;
+
+  phone: string;
+  email?: string;
+
+  countryDTO: {
+    name: string;
+  };
+
   provinceDTO: {
     alpha2code: string;
     countryCode: string;
-    name: string; // Format: "CA-ON"
+    name: string;
   };
-  postalCode: string;
-  countryDTO: {
-    name: string; // Country code, e.g., "CA"
-  };
-  phone: string;
-  email?: string;
-  countryCode: string;
+
   countryName: string;
   provinceName: string;
   cityName: string;
   alphaNumericPostalCode: string;
+  countryCode: string;
 }
 
-// Package info
+
+// ============================================================
+// Package
+// ============================================================
+
 export interface ShipmentPackage {
   description: string;
-  length: number;
-  width: number;
   height: number;
+  length: number;
   weight: number;
+  width: number;
 }
 
-// DTO wrapper types for API
+
+// ============================================================
+// DTO
+// ============================================================
+
 export interface DTOWrapper<T = string> {
   name: T;
 }
+
 
 export interface ShipmentUnitDTO {
   name: string;
   system: string;
 }
 
-// Additional services
+
+// ============================================================
+// Additional Services
+// ============================================================
+
 export interface ShippingOrderAddSvc {
   ambientTemperatureRequired: boolean;
   coldChainRequired: boolean;
@@ -77,30 +98,52 @@ export interface ShippingOrderAddSvc {
   fbaapproved: boolean;
 }
 
+
+// ============================================================
+// COD
+// ============================================================
+
 export interface ShippingOrderCODService {
   codServiceId: number;
 }
 
-// Quote request/response
+
+// ============================================================
+// Quote Request
+// ============================================================
+
 export interface QuoteRequest {
-  scheduledShipDate: string; // Format: "YYYY-MM-DD HH:mm"
   shipFrom: AddressInfo;
   shipTo: AddressInfo;
+
+  scheduledShipDate: string;
+
   packageTypeDTO: DTOWrapper;
+
   shipmentPackageUnits: ShipmentUnitDTO;
+
   shipmentPackages: ShipmentPackage[];
+
   shippingOrderAddSvc: ShippingOrderAddSvc;
+
   shippingOrderCODService: ShippingOrderCODService;
+
   codAddress: null;
+
   currencyCode: string;
 }
+
+
+// ============================================================
+// Quote Response
+// ============================================================
 
 export interface Rate {
   serviceCode: string;
   charge: number;
   fuelSurchargePercent: number;
   estTransitDays: number;
-  // Additional fields we ignore for display
+
   actualWeight?: number;
   billableWeight?: number;
   dimensionalWeight?: number;
@@ -111,16 +154,33 @@ export interface Rate {
   costCurrencyCode?: string;
 }
 
+
 export interface QuoteResponse {
   rates: Rate[];
 }
 
-// Shipment request/response
-export interface ShipmentRequest extends QuoteRequest {
-  selectedRate: Rate;
+
+// ============================================================
+// Shipment
+// ============================================================
+
+export interface ShipmentRequest {
+  shippingOrderRateDTO: QuoteRequest;
 }
 
 export interface ShipmentResponse {
   masterTrackingNumber: string;
-  pdf?: string | Blob | ArrayBuffer; // Format depends on API implementation
+
+  labels?: {
+    content: string;
+    height: number;
+    length: number;
+    totalGrossWeight: number;
+    trackingNumber: string;
+    type: string;
+    volumeUnit: string;
+    weightUnit: string;
+    width: number;
+  }[];
 }
+

@@ -1,8 +1,8 @@
 import { Component, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { QuoteService } from './quote.service';
-import { ShipmentService } from './shipment.service';
+import { QuoteService } from './service/quote.service';
+import { ShipmentService } from './service/shipment.service';
 import { Rate, QuoteRequest, ShipmentRequest, ShippingOrderAddSvc } from './types';
 
 @Component({
@@ -92,114 +92,201 @@ export class App {
     });
   }
 
-  onShipment(): void {
-    const rate = this.selectedRate();
-    if (!rate || this.form.invalid || this.shipmentLoading()) {
-      return;
-    }
-
-    this.errorMessage.set('');
-    this.shipmentLoading.set(true);
-
-    const request: ShipmentRequest = {
-      ...this.buildQuoteRequest(),
-      selectedRate: rate
-    };
-
-    this.shipmentService.createShipment(request).subscribe({
-      next: (response) => {
-        this.shipmentLoading.set(false);
-        this.downloadPDF(response.masterTrackingNumber, response.pdf);
-      },
-      error: (error) => {
-        this.shipmentLoading.set(false);
-        this.errorMessage.set(error?.error?.message || 'Failed to create shipment. Please try again.');
-      }
-    });
+  
+onShipment(): void {
+  if (!this.selectedRate() || this.form.invalid || this.shipmentLoading()) {
+    return;
   }
+
+  this.errorMessage.set('');
+  this.shipmentLoading.set(true);
+
+  const request: ShipmentRequest = {
+    shippingOrderRateDTO: this.buildQuoteRequest()
+  };
+
+  console.log(
+    'SHIPMENT REQUEST:',
+    JSON.stringify(request, null, 2)
+  );
+
+  this.shipmentService.createShipment(request).subscribe({
+    next: (response) => {
+      this.shipmentLoading.set(false);
+
+      console.log('===== SHIPMENT API RESPONSE =====');
+      console.log(response);
+      console.log('Response type:', typeof response);
+
+      console.log('Labels:', response?.labels);
+      console.log(
+        'PDF content:',
+        response?.labels?.[0]?.content
+      );
+      console.log(
+        'PDF content type:',
+        typeof response?.labels?.[0]?.content
+      );
+      console.log(
+        'Tracking:',
+        response?.masterTrackingNumber
+      );
+
+      this.downloadPDF(
+        response.masterTrackingNumber,
+        response?.labels?.[0]?.content
+      );
+    },
+
+    error: (error) => {
+      this.shipmentLoading.set(false);
+
+      console.error('SHIPMENT ERROR:', error);
+      console.error('SHIPMENT ERROR BODY:', error?.error);
+
+      this.errorMessage.set(
+        error?.error?.message ||
+        'Failed to create shipment. Please try again.'
+      );
+    }
+  });
+}
+
 
   selectRate(rate: Rate): void {
     this.selectedRate.set(rate);
   }
 
   private buildQuoteRequest(): QuoteRequest {
-    const formValue = this.form.value;
-    const countryFrom = formValue.fromCountry;
-    const provinceFrom = formValue.fromProvince;
-    const countryTo = formValue.toCountry;
-    const provinceTo = formValue.toProvince;
+  const formValue = this.form.getRawValue();
 
-    // Combine date and time: "YYYY-MM-DD HH:mm"
-    const scheduledShipDate = `${formValue.scheduledShipDate} ${formValue.scheduledShipTime}`;
+  const countryFrom = formValue.fromCountry;
+  const provinceFrom = formValue.fromProvince;
 
-    return {
-      scheduledShipDate,
-      shipFrom: {
-        attention: formValue.fromAttention,
-        company: formValue.fromCompany,
-        address1: formValue.fromAddress1,
-        cityName: formValue.fromCity,
-        provinceDTO: {
-          alpha2code: provinceFrom,
-          countryCode: countryFrom,
-          name: this.getProvinceCode(countryFrom, provinceFrom)
-        },
-        postalCode: formValue.fromPostal,
-        countryDTO: {
-          name: countryFrom
-        },
-        phone: this.normalizePhone(formValue.fromPhone),
-        email: formValue.fromEmail || '',
+  const countryTo = formValue.toCountry;
+  const provinceTo = formValue.toProvince;
+
+  const scheduledShipDate =
+    `${formValue.scheduledShipDate} ${formValue.scheduledShipTime}`;
+
+  return {
+    shipFrom: {
+      attention: formValue.fromAttention,
+      company: formValue.fromCompany,
+      address1: formValue.fromAddress1,
+      postalCode: formValue.fromPostal,
+      phone: this.normalizePhone(formValue.fromPhone),
+      email: formValue.fromEmail,
+
+      countryDTO: {
+        name: countryFrom
+      },
+
+      provinceDTO: {
+        alpha2code: provinceFrom,
         countryCode: countryFrom,
-        countryName: this.getCountryName(countryFrom),
-        provinceName: this.getProvinceName(provinceFrom),
-        alphaNumericPostalCode: formValue.fromPostal
+        name: `${countryFrom}-${provinceFrom}`
       },
-      shipTo: {
-        attention: formValue.toAttention,
-        company: formValue.toCompany,
-        address1: formValue.toAddress1,
-        cityName: formValue.toCity,
-        provinceDTO: {
-          alpha2code: provinceTo,
-          countryCode: countryTo,
-          name: this.getProvinceCode(countryTo, provinceTo)
-        },
-        postalCode: formValue.toPostal,
-        countryDTO: {
-          name: countryTo
-        },
-        phone: this.normalizePhone(formValue.toPhone),
-        email: formValue.toEmail || '',
+
+      countryName: this.getCountryName(countryFrom),
+      provinceName: this.getProvinceName(provinceFrom),
+      cityName: formValue.fromCity,
+      alphaNumericPostalCode: formValue.fromPostal,
+      countryCode: countryFrom
+    },
+
+    shipTo: {
+      attention: formValue.toAttention,
+      company: formValue.toCompany,
+      address1: formValue.toAddress1,
+      postalCode: formValue.toPostal,
+      phone: this.normalizePhone(formValue.toPhone),
+
+      // Match your required payload exactly
+      email: 'info@eshipper.com',
+
+      countryDTO: {
+        name: countryTo
+      },
+
+      provinceDTO: {
+        alpha2code: provinceTo,
         countryCode: countryTo,
-        countryName: this.getCountryName(countryTo),
-        provinceName: this.getProvinceName(provinceTo),
-        alphaNumericPostalCode: formValue.toPostal
+        name: `${countryTo}-${provinceTo}`
       },
-      packageTypeDTO: {
-        name: 'Package'
-      },
-      shipmentPackageUnits: {
-        name: 'Imperial',
-        system: 'IMPERIAL'
-      },
-      shipmentPackages: [
-        {
-          description: 'eCommerce',
-          length: 7,
-          width: 5,
-          height: 2,
-          weight: 1
-        }
-      ],
-      shippingOrderAddSvc: this.getDefaultAddSvc(),
-      shippingOrderCODService: {
-        codServiceId: 0
-      },
-      codAddress: null,
-      currencyCode: 'CAD'
-    };
-  }
+
+      countryName: this.getCountryName(countryTo),
+      provinceName: this.getProvinceName(provinceTo),
+      cityName: formValue.toCity,
+      alphaNumericPostalCode: formValue.toPostal,
+      countryCode: countryTo
+    },
+
+    scheduledShipDate,
+
+    packageTypeDTO: {
+      name: 'Package'
+    },
+
+    shipmentPackageUnits: {
+      name: 'Imperial',
+      system: 'IMPERIAL'
+    },
+
+    shipmentPackages: [
+      {
+        description: 'eCommerce',
+        height: 2,
+        length: 7,
+        weight: 1,
+        width: 5
+      }
+    ],
+
+    shippingOrderAddSvc: {
+      ambientTemperatureRequired: false,
+      coldChainRequired: false,
+      crossBorderFee: false,
+      customsFreight: false,
+      dangerousGoods: 0,
+      deliveryAppt: false,
+      docsOnly: false,
+      excessLength: false,
+      exibitionSite: false,
+      heated: false,
+      hold: false,
+      homelandSecurity: false,
+      inBondFee: false,
+      insideDelivery: false,
+      insidePickup: false,
+      keepCoolRequired: false,
+      limitedAccess: false,
+      militaryBaseDelivery: false,
+      pierCharge: false,
+      returnService: false,
+      satDelivery: false,
+      saturdayPickup: false,
+      shipFromTailgate: false,
+      shipToTailgate: false,
+      signatureRequired: 0,
+      singleShipment: false,
+      fbaApproved: false,
+      sortSegregate: false,
+      noSafeDrop: false,
+      insuranceType: 0,
+      insuredAmount: 0.0,
+      fbaapproved: false
+    },
+
+    shippingOrderCODService: {
+      codServiceId: 0
+    },
+
+    codAddress: null,
+
+    currencyCode: 'CAD'
+  };
+}
 
   private getProvinceCode(countryCode: string, provinceCode: string): string {
     // Format: "CA-ON", "CA-BC", etc.
@@ -277,37 +364,107 @@ export class App {
     };
   }
 
-  private downloadPDF(trackingNumber: string, pdfData: string | Blob | ArrayBuffer | undefined): void {
-    if (!pdfData) {
+  private downloadPDF(
+  trackingNumber: string,
+  pdfData: string | Blob | ArrayBuffer | undefined
+): void {
+
+  console.log('===== PDF DOWNLOAD =====');
+  console.log('Tracking number:', trackingNumber);
+  console.log('PDF data exists:', !!pdfData);
+  console.log('PDF data type:', typeof pdfData);
+
+  if (!pdfData) {
+    console.error('No PDF data returned by shipment API');
+    this.errorMessage.set('Shipment created, but no PDF was returned.');
+    return;
+  }
+
+  try {
+    let blob: Blob;
+
+    if (pdfData instanceof Blob) {
+
+      console.log('PDF is already a Blob');
+
+      blob = pdfData;
+
+    } else if (pdfData instanceof ArrayBuffer) {
+
+      console.log('PDF is an ArrayBuffer');
+
+      blob = new Blob(
+        [pdfData],
+        { type: 'application/pdf' }
+      );
+
+    } else if (typeof pdfData === 'string') {
+
+      console.log('PDF is a Base64 string');
+      console.log('PDF string length:', pdfData.length);
+
+      // Remove data URI prefix if present
+      const base64 = pdfData.includes(',')
+        ? pdfData.split(',')[1]
+        : pdfData;
+
+      // Remove whitespace/newlines
+      const cleanBase64 = base64.replace(/\s/g, '');
+
+      const binaryString = atob(cleanBase64);
+
+      const bytes = new Uint8Array(binaryString.length);
+
+      for (let i = 0; i < binaryString.length; i++) {
+        bytes[i] = binaryString.charCodeAt(i);
+      }
+
+      blob = new Blob(
+        [bytes],
+        { type: 'application/pdf' }
+      );
+
+    } else {
+
+      console.error('Unsupported PDF response type');
+      this.errorMessage.set('Unsupported PDF response format.');
       return;
     }
 
-    try {
-      let blob: Blob;
-      if (typeof pdfData === 'string') {
-        // Assume base64 encoded
-        const binaryString = atob(pdfData);
-        const bytes = new Uint8Array(binaryString.length);
-        for (let i = 0; i < binaryString.length; i++) {
-          bytes[i] = binaryString.charCodeAt(i);
-        }
-        blob = new Blob([bytes], { type: 'application/pdf' });
-      } else if (pdfData instanceof Blob) {
-        blob = pdfData;
-      } else {
-        blob = new Blob([pdfData], { type: 'application/pdf' });
-      }
+    console.log('Blob created');
+    console.log('Blob size:', blob.size);
+    console.log('Blob type:', blob.type);
 
-      const url = window.URL.createObjectURL(blob);
-      const link = document.createElement('a');
-      link.href = url;
-      link.download = `${trackingNumber}.pdf`;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      window.URL.revokeObjectURL(url);
-    } catch (error) {
-      this.errorMessage.set('Failed to download PDF. Please try again.');
+    if (blob.size === 0) {
+      console.error('PDF blob is empty');
+      this.errorMessage.set('The returned PDF is empty.');
+      return;
     }
+
+    const url = window.URL.createObjectURL(blob);
+
+    const link = document.createElement('a');
+
+    link.href = url;
+    link.download = `${trackingNumber || 'shipment'}.pdf`;
+
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+
+    setTimeout(() => {
+      window.URL.revokeObjectURL(url);
+    }, 1000);
+
+    console.log('PDF download triggered');
+
+  } catch (error) {
+
+    console.error('PDF DOWNLOAD ERROR:', error);
+
+    this.errorMessage.set(
+      'Shipment was created, but the PDF could not be downloaded.'
+    );
   }
+}
 }
