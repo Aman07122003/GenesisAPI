@@ -256,10 +256,224 @@
 
       </div>
       </div>
-    </form>
+    
+
+    <!-- =====================================================
+       STEP 3: PACKAGES
+       ===================================================== -->
+
+  <div class="workspace-label">
+    <span class="workspace-label__eyebrow">Step 3</span>
+    <span class="workspace-label__text">Packages</span>
+  </div>
+
+  <section
+    class="card packages-section"
+    formArrayName="packages">
+
+    <div class="packages-header">
+
+      <div>
+        <h2 class="section-heading section-heading--plain">
+          Shipment Packages
+        </h2>
+
+        <p class="packages-subtitle">
+          Add the dimensions and weight for each package.
+        </p>
+      </div>
+
+      <button
+        type="button"
+        class="btn btn--secondary btn--small"
+        (click)="addPackage()">
+        + Add Package
+      </button>
+
+    </div>
+
+
+    <div class="packages-list">
+
+      <div
+        class="package-card"
+        *ngFor="let packageGroup of packages.controls; let i = index"
+        [formGroupName]="i">
+
+        <div class="package-card__header">
+
+          <div class="package-number">
+
+            <span class="package-number__badge">
+              {{ i + 1 }}
+            </span>
+
+            <div>
+              <h3>Package {{ i + 1 }}</h3>
+
+              <span class="package-label">
+                {{ packageGroup.get('description')?.value || 'New package' }}
+              </span>
+            </div>
+
+          </div>
+
+          <button
+            *ngIf="packages.length > 1"
+            type="button"
+            class="remove-package"
+            (click)="removePackage(i)">
+            Remove
+          </button>
+
+        </div>
+
+
+        <!-- Description -->
+        <div class="package-description field">
+
+          <label [for]="'package-description-' + i">
+            Description
+          </label>
+
+          <input
+            [id]="'package-description-' + i"
+            type="text"
+            formControlName="description"
+            class="input"
+            placeholder="e.g. eCommerce">
+
+        </div>
+
+
+        <!-- Dimensions -->
+        <div class="package-dimensions">
+
+          <div class="field">
+            <label [for]="'package-length-' + i">
+              Length
+            </label>
+
+            <div class="input-with-unit">
+
+              <input
+                [id]="'package-length-' + i"
+                type="number"
+                formControlName="length"
+                class="input"
+                min="0.01"
+                step="0.01"
+                placeholder="0">
+
+              <span class="input-unit">in</span>
+
+            </div>
+          </div>
+
+
+          <div class="field">
+            <label [for]="'package-width-' + i">
+              Width
+            </label>
+
+            <div class="input-with-unit">
+
+              <input
+                [id]="'package-width-' + i"
+                type="number"
+                formControlName="width"
+                class="input"
+                min="0.01"
+                step="0.01"
+                placeholder="0">
+
+              <span class="input-unit">in</span>
+
+            </div>
+          </div>
+
+
+          <div class="field">
+            <label [for]="'package-height-' + i">
+              Height
+            </label>
+
+            <div class="input-with-unit">
+
+              <input
+                [id]="'package-height-' + i"
+                type="number"
+                formControlName="height"
+                class="input"
+                min="0.01"
+                step="0.01"
+                placeholder="0">
+
+              <span class="input-unit">in</span>
+
+            </div>
+          </div>
+
+
+          <div class="field">
+            <label [for]="'package-weight-' + i">
+              Weight
+            </label>
+
+            <div class="input-with-unit">
+
+              <input
+                [id]="'package-weight-' + i"
+                type="number"
+                formControlName="weight"
+                class="input"
+                min="0.01"
+                step="0.01"
+                placeholder="0">
+
+              <span class="input-unit">lbs</span>
+
+            </div>
+          </div>
+
+        </div>
+
+
+        <!-- Summary -->
+        <div class="package-summary">
+
+          <span class="package-summary__dimensions">
+            Dimensions:
+            <strong>
+              {{ packageGroup.get('length')?.value || 0 }}
+              ×
+              {{ packageGroup.get('width')?.value || 0 }}
+              ×
+              {{ packageGroup.get('height')?.value || 0 }}
+              in
+            </strong>
+          </span>
+
+          <span class="package-summary__weight">
+            Weight:
+            <strong>
+              {{ packageGroup.get('weight')?.value || 0 }} lbs
+            </strong>
+          </span>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </section>
+
+</form>
+
 
     <div class="workspace-label">
-      <span class="workspace-label__eyebrow">Step 3</span>
+      <span class="workspace-label__eyebrow">Step 4</span>
       <span class="workspace-label__text">Available rates</span>
     </div>
 
@@ -301,7 +515,7 @@
     </section>
 
     <!-- Action Buttons -->
-    <section class="card actions-section">
+    <section class=" actions-section">
       <div class="button-group">
         <button
           type="button"
