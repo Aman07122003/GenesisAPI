@@ -1,6 +1,6 @@
 import { Component, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators, FormArray } from '@angular/forms';
 import { QuoteService } from './service/quote.service';
 import { ShipmentService } from './service/shipment.service';
 import { Rate, QuoteRequest, ShipmentRequest, ShippingOrderAddSvc } from './types';
@@ -31,36 +31,77 @@ export class App {
     this.form = this.createForm();
   }
 
-  private createForm(): FormGroup {
-    const tomorrow = this.getTomorrowDate();
-    return this.fb.group({
-      scheduledShipDate: [tomorrow, Validators.required],
-      scheduledShipTime: ['11:00', Validators.required],
+  private createPackage(): FormGroup {
+  return this.fb.group({
+    description: ['eCommerce', Validators.required],
+    length: [7, [Validators.required, Validators.min(0.01)]],
+    width: [5, [Validators.required, Validators.min(0.01)]],
+    height: [2, [Validators.required, Validators.min(0.01)]],
+    weight: [1, [Validators.required, Validators.min(0.01)]]
+  });
+}
 
-      // From
-      fromAttention: ['Sender', Validators.required],
-      fromCompany: ['Sender', Validators.required],
-      fromAddress1: ['9 Van der Graaf Crt', Validators.required],
-      fromAddress2: [''],
-      fromCity: ['Brampton', Validators.required],
-      fromProvince: ['ON', Validators.required],
-      fromPostal: ['L6T5E5', Validators.required],
-      fromCountry: ['CA', Validators.required],
-      fromPhone: ['877 373 9222'],
-      fromEmail: ['info@eshipper.com'],
+  get packages(): FormArray {
+  return this.form.get('packages') as FormArray;
+}
 
-      // To
-      toAttention: ['Recipient', Validators.required],
-      toCompany: ['Recipient', Validators.required],
-      toAddress1: ['3211 Grant McConachie Way', Validators.required],
-      toAddress2: [''],
-      toCity: ['Richmond', Validators.required],
-      toProvince: ['BC', Validators.required],
-      toPostal: ['V7B0A4', Validators.required],
-      toCountry: ['CA', Validators.required],
-      toPhone: ['604 207 7077'],
-    });
+addPackage(): void {
+  this.packages.push(this.createPackage());
+}
+
+removePackage(index: number): void {
+  if (this.packages.length <= 1) {
+    return;
   }
+
+  this.packages.removeAt(index);
+}
+
+  private createForm(): FormGroup {
+  const tomorrow = this.getTomorrowDate();
+
+  return this.fb.group({
+
+    scheduledShipDate: [
+      tomorrow,
+      Validators.required
+    ],
+
+    scheduledShipTime: [
+      '11:00',
+      Validators.required
+    ],
+
+    // From
+    fromAttention: ['Sender', Validators.required],
+    fromCompany: ['Sender', Validators.required],
+    fromAddress1: ['9 Van der Graaf Crt', Validators.required],
+    fromAddress2: [''],
+    fromCity: ['Brampton', Validators.required],
+    fromProvince: ['ON', Validators.required],
+    fromPostal: ['L6T5E5', Validators.required],
+    fromCountry: ['CA', Validators.required],
+    fromPhone: ['877 373 9222'],
+    fromEmail: ['info@eshipper.com'],
+
+    // To
+    toAttention: ['Recipient', Validators.required],
+    toCompany: ['Recipient', Validators.required],
+    toAddress1: ['3211 Grant McConachie Way', Validators.required],
+    toAddress2: [''],
+    toCity: ['Richmond', Validators.required],
+    toProvince: ['BC', Validators.required],
+    toPostal: ['V7B0A4', Validators.required],
+    toCountry: ['CA', Validators.required],
+    toPhone: ['604 207 7077'],
+
+    // Packages
+    packages: this.fb.array([
+      this.createPackage()
+    ])
+
+  });
+}
 
   onQuote(): void {
     if (this.form.invalid || this.quoteLoading()) {
