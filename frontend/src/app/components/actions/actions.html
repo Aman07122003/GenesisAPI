@@ -1,0 +1,27 @@
+<section class="actions-section">
+  <div class="button-group">
+    <button
+      type="button"
+      (click)="quote.emit()"
+      [disabled]="quoteDisabled"
+      class="btn btn--primary">
+      <span *ngIf="!quoteLoading">Get Quotes</span>
+      <span *ngIf="quoteLoading" class="btn__loading">
+        <span class="spinner" aria-hidden="true"></span>
+        Loading...
+      </span>
+    </button>
+
+    <button
+      type="button"
+      (click)="shipment.emit()"
+      [disabled]="shipmentDisabled"
+      class="btn btn--secondary">
+      <span *ngIf="!shipmentLoading">Create Shipment</span>
+      <span *ngIf="shipmentLoading" class="btn__loading">
+        <span class="spinner" aria-hidden="true"></span>
+        Loading...
+      </span>
+    </button>
+  </div>
+</section>
