@@ -1,0 +1,287 @@
+/* =========================================================
+   PACKAGES
+   ========================================================= */
+
+.packages-section {
+  width: 100%;
+  margin-bottom: 28px;
+  padding: 24px;
+}
+
+.packages-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 24px;
+  padding-bottom: 20px;
+  margin-bottom: 20px;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.packages-subtitle {
+  margin: 6px 0 0;
+  color: #6b7280;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.packages-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+
+/* =========================================================
+   PACKAGE CARD
+   ========================================================= */
+
+.package-card {
+  position: relative;
+  padding: 20px;
+  background: #ffffff;
+  border: 1px solid #dfe3e8;
+  border-radius: 10px;
+  transition:
+    border-color 0.15s ease,
+    box-shadow 0.15s ease;
+}
+
+.package-card:hover {
+  border-color: #c8ced6;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.04);
+}
+
+
+/* =========================================================
+   PACKAGE HEADER
+   ========================================================= */
+
+.package-card__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.package-number {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+
+.package-number__badge {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 32px;
+  height: 32px;
+
+  flex: 0 0 32px;
+
+  border-radius: 7px;
+
+  background: #111827;
+  color: #ffffff;
+
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.package-number h3 {
+  margin: 0;
+
+  color: #111827;
+  font-size: 15px;
+  font-weight: 650;
+  line-height: 1.3;
+}
+
+.package-label {
+  display: block;
+  margin-top: 2px;
+
+  color: #6b7280;
+  font-size: 12px;
+
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+
+/* =========================================================
+   REMOVE BUTTON
+   ========================================================= */
+
+.remove-package {
+  appearance: none;
+  border: 0;
+  background: transparent;
+
+  padding: 6px 8px;
+
+  color: #b42318;
+  font-size: 12px;
+  font-weight: 600;
+
+  cursor: pointer;
+  border-radius: 5px;
+
+  transition:
+    background-color 0.15s ease,
+    color 0.15s ease;
+}
+
+.remove-package:hover {
+  background: #fef3f2;
+  color: #912018;
+}
+
+.remove-package:focus-visible {
+  outline: 2px solid #111827;
+  outline-offset: 2px;
+}
+
+
+/* =========================================================
+   DESCRIPTION
+   ========================================================= */
+
+.package-description {
+  margin-bottom: 18px;
+}
+
+
+/* =========================================================
+   DIMENSIONS
+   ========================================================= */
+
+.package-dimensions {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.package-dimensions .field {
+  min-width: 0;
+}
+
+
+/* =========================================================
+   INPUT + UNIT
+   ========================================================= */
+
+.input-with-unit {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.input-with-unit .input {
+  width: 100%;
+  padding-right: 42px;
+}
+
+.input-unit {
+  position: absolute;
+  right: 12px;
+
+  color: #6b7280;
+  font-size: 12px;
+  font-weight: 500;
+
+  pointer-events: none;
+}
+
+
+/* =========================================================
+   PACKAGE SUMMARY
+   ========================================================= */
+
+.package-summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 16px;
+
+  margin-top: 18px;
+  padding-top: 14px;
+
+  border-top: 1px solid #edf0f2;
+
+  color: #6b7280;
+  font-size: 12px;
+}
+
+.package-summary strong {
+  color: #374151;
+  font-weight: 600;
+}
+
+.package-summary__dimensions,
+.package-summary__weight {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+
+/* =========================================================
+   ADD PACKAGE BUTTON
+   ========================================================= */
+
+.packages-header .btn--small {
+  flex: 0 0 auto;
+  white-space: nowrap;
+}
+
+
+/* =========================================================
+   RESPONSIVE
+   ========================================================= */
+
+@media (max-width: 900px) {
+
+  .packages-header {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .packages-header .btn--small {
+    align-self: flex-start;
+  }
+
+  .package-dimensions {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+
+@media (max-width: 600px) {
+
+  .packages-section {
+    padding: 16px;
+  }
+
+  .package-card {
+    padding: 16px;
+  }
+
+  .package-card__header {
+    align-items: flex-start;
+  }
+
+  .package-dimensions {
+    grid-template-columns: 1fr;
+  }
+
+  .package-summary {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+}
