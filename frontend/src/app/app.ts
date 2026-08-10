@@ -1,14 +1,19 @@
 import { Component, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators, FormArray } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators, FormArray, AbstractControl, ValidationErrors } from '@angular/forms';
 import { QuoteService } from './service/quote.service';
 import { ShipmentService } from './service/shipment.service';
 import { Rate, QuoteRequest, ShipmentRequest, ShippingOrderAddSvc } from './types';
+import { Schedule } from './components/schedule/schedule';
+import { Route } from './components/route/route';
+import { Packages } from './components/packages/packages';
+import { Rates } from './components/rates/rates';
+import { Actions } from './components/actions/actions';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [CommonModule, FormsModule, ReactiveFormsModule],
+  imports: [CommonModule, FormsModule, ReactiveFormsModule, Schedule, Route, Packages, Rates, Actions],
   templateUrl: './app.html',
   styleUrl: './app.css'
 })
@@ -33,12 +38,123 @@ export class App {
 
   private createPackage(): FormGroup {
   return this.fb.group({
-    description: ['eCommerce', Validators.required],
-    length: [7, [Validators.required, Validators.min(0.01)]],
-    width: [5, [Validators.required, Validators.min(0.01)]],
-    height: [2, [Validators.required, Validators.min(0.01)]],
-    weight: [1, [Validators.required, Validators.min(0.01)]]
+    description: [
+      '',
+      [
+        Validators.required,
+        this.noWhitespaceValidator.bind(this),
+        Validators.maxLength(100)
+      ]
+    ],
+
+    length: [
+      '',
+      [
+        Validators.required,
+        Validators.min(0.01),
+        Validators.max(9999)
+      ]
+    ],
+
+    width: [
+      '',
+      [
+        Validators.required,
+        Validators.min(0.01),
+        Validators.max(9999)
+      ]
+    ],
+
+    height: [
+      '',
+      [
+        Validators.required,
+        Validators.min(0.01),
+        Validators.max(9999)
+      ]
+    ],
+
+    weight: [
+      '',
+      [
+        Validators.required,
+        Validators.min(0.01),
+        Validators.max(9999)
+      ]
+    ]
   });
+}
+
+private noWhitespaceValidator(
+  control: AbstractControl
+): ValidationErrors | null {
+  const value = control.value;
+
+  if (typeof value !== 'string') {
+    return null;
+  }
+
+  return value.trim().length === 0
+    ? { whitespace: true }
+    : null;
+}
+
+private canadianPostalCodeValidator(
+  control: AbstractControl
+): ValidationErrors | null {
+  const value = control.value;
+
+  if (!value) {
+    return null;
+  }
+
+  const postalCode = value
+    .toString()
+    .trim()
+    .toUpperCase()
+    .replace(/\s/g, '');
+
+  const canadianPostalRegex =
+    /^[ABCEGHJ-NPRSTVXY]\d[ABCEGHJ-NPRSTV-Z]\d[ABCEGHJ-NPRSTV-Z]\d$/;
+
+  return canadianPostalRegex.test(postalCode)
+    ? null
+    : { invalidPostalCode: true };
+}
+
+private phoneValidator(
+  control: AbstractControl
+): ValidationErrors | null {
+  const value = control.value;
+
+  if (!value) {
+    return null;
+  }
+
+  const digits = value
+    .toString()
+    .replace(/\D/g, '');
+
+  return digits.length === 10
+    ? null
+    : { invalidPhone: true };
+}
+
+private futureOrTodayDateValidator(
+  control: AbstractControl
+): ValidationErrors | null {
+  if (!control.value) {
+    return null;
+  }
+
+  const selectedDate = new Date(`${control.value}T00:00:00`);
+
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  return selectedDate >= today
+    ? null
+    : { pastDate: true };
 }
 
   get packages(): FormArray {
@@ -58,84 +174,271 @@ removePackage(index: number): void {
 }
 
   private createForm(): FormGroup {
-  const tomorrow = this.getTomorrowDate();
-
   return this.fb.group({
 
     scheduledShipDate: [
-      tomorrow,
-      Validators.required
+      this.getTodayDate(),
+      [
+        Validators.required,
+        this.futureOrTodayDateValidator.bind(this)
+      ]
     ],
 
     scheduledShipTime: [
       '11:00',
-      Validators.required
+      [
+        Validators.required,
+        Validators.pattern(/^([01]\d|2[0-3]):[0-5]\d$/)
+      ]
     ],
 
-    // From
-    fromAttention: ['Sender', Validators.required],
-    fromCompany: ['Sender', Validators.required],
-    fromAddress1: ['9 Van der Graaf Crt', Validators.required],
-    fromAddress2: [''],
-    fromCity: ['Brampton', Validators.required],
-    fromProvince: ['ON', Validators.required],
-    fromPostal: ['L6T5E5', Validators.required],
-    fromCountry: ['CA', Validators.required],
-    fromPhone: ['877 373 9222'],
-    fromEmail: ['info@eshipper.com'],
+    // =========================
+    // FROM
+    // =========================
 
-    // To
-    toAttention: ['Recipient', Validators.required],
-    toCompany: ['Recipient', Validators.required],
-    toAddress1: ['3211 Grant McConachie Way', Validators.required],
-    toAddress2: [''],
-    toCity: ['Richmond', Validators.required],
-    toProvince: ['BC', Validators.required],
-    toPostal: ['V7B0A4', Validators.required],
-    toCountry: ['CA', Validators.required],
-    toPhone: ['604 207 7077'],
+    fromAttention: [
+      '',
+      [
+        Validators.required,
+        this.noWhitespaceValidator.bind(this),
+        Validators.maxLength(100)
+      ]
+    ],
 
-    // Packages
+    fromCompany: [
+      '',
+      [
+        Validators.required,
+        this.noWhitespaceValidator.bind(this),
+        Validators.maxLength(100)
+      ]
+    ],
+
+    fromAddress1: [
+      '',
+      [
+        Validators.required,
+        this.noWhitespaceValidator.bind(this),
+        Validators.maxLength(200)
+      ]
+    ],
+
+    fromAddress2: [
+      '',
+      [
+        Validators.maxLength(200)
+      ]
+    ],
+
+    fromCity: [
+      '',
+      [
+        Validators.required,
+        this.noWhitespaceValidator.bind(this),
+        Validators.maxLength(100)
+      ]
+    ],
+
+    fromProvince: [
+      '',
+      [
+        Validators.required
+      ]
+    ],
+
+    fromPostal: [
+      '',
+      [
+        Validators.required,
+        this.canadianPostalCodeValidator.bind(this)
+      ]
+    ],
+
+    fromCountry: [
+      'CA',
+      [
+        Validators.required
+      ]
+    ],
+
+    fromPhone: [
+      '',
+      [
+        Validators.required,
+        this.phoneValidator.bind(this)
+      ]
+    ],
+
+    fromEmail: [
+      '',
+      [
+        Validators.required,
+        Validators.email
+      ]
+    ],
+
+    // =========================
+    // TO
+    // =========================
+
+    toAttention: [
+      '',
+      [
+        Validators.required,
+        this.noWhitespaceValidator.bind(this),
+        Validators.maxLength(100)
+      ]
+    ],
+
+    toCompany: [
+      '',
+      [
+        Validators.required,
+        this.noWhitespaceValidator.bind(this),
+        Validators.maxLength(100)
+      ]
+    ],
+
+    toAddress1: [
+      '',
+      [
+        Validators.required,
+        this.noWhitespaceValidator.bind(this),
+        Validators.maxLength(200)
+      ]
+    ],
+
+    toAddress2: [
+      '',
+      [
+        Validators.maxLength(200)
+      ]
+    ],
+
+    toCity: [
+      '',
+      [
+        Validators.required,
+        this.noWhitespaceValidator.bind(this),
+        Validators.maxLength(100)
+      ]
+    ],
+
+    toProvince: [
+      '',
+      [
+        Validators.required
+      ]
+    ],
+
+    toPostal: [
+      '',
+      [
+        Validators.required,
+        this.canadianPostalCodeValidator.bind(this)
+      ]
+    ],
+
+    toCountry: [
+      'CA',
+      [
+        Validators.required
+      ]
+    ],
+
+    toPhone: [
+      '',
+      [
+        Validators.required,
+        this.phoneValidator.bind(this)
+      ]
+    ],
+
+    toEmail: [
+      '',
+      [
+        Validators.required,
+        Validators.email
+      ]
+    ],
+
+    // =========================
+    // PACKAGES
+    // =========================
+
     packages: this.fb.array([
       this.createPackage()
     ])
-
   });
 }
 
   onQuote(): void {
-    if (this.form.invalid || this.quoteLoading()) {
-      return;
-    }
-
-    console.log('Form Value:', this.form.value);
-
-    this.errorMessage.set('');
-    this.quoteLoading.set(true);
-    this.selectedRate.set(null);
-    this.rates.set([]);
-
-    const request = this.buildQuoteRequest();
-
-    this.quoteService.getQuotes(request).subscribe({
-      next: (response) => {
-        this.quoteLoading.set(false);
-        if (response.rates && response.rates.length > 0) {
-          this.rates.set(response.rates);
-        } else {
-          this.errorMessage.set('No shipping rates available for the selected shipment.');
-        }
-      },
-      error: (error) => {
-        this.quoteLoading.set(false);
-        this.errorMessage.set(error?.error?.message || 'Failed to retrieve quotes. Please try again.');
-      }
-    });
+  if (this.quoteLoading()) {
+    return;
   }
+
+  if (this.form.invalid) {
+    this.form.markAllAsTouched();
+    this.errorMessage.set(
+      'Please correct the highlighted fields before requesting a quote.'
+    );
+    return;
+  }
+
+  this.errorMessage.set('');
+  this.quoteLoading.set(true);
+  this.selectedRate.set(null);
+  this.rates.set([]);
+
+  const request = this.buildQuoteRequest();
+
+  console.log(
+    'QUOTE REQUEST:',
+    JSON.stringify(request, null, 2)
+  );
+
+  this.quoteService.getQuotes(request).subscribe({
+    next: (response) => {
+      this.quoteLoading.set(false);
+
+      if (response.rates && response.rates.length > 0) {
+        this.rates.set(response.rates);
+      } else {
+        this.errorMessage.set(
+          'No shipping rates available for the selected shipment.'
+        );
+      }
+    },
+
+    error: (error) => {
+      this.quoteLoading.set(false);
+
+      this.errorMessage.set(
+        error?.error?.message ||
+        'Failed to retrieve quotes. Please try again.'
+      );
+    }
+  });
+}
 
   
 onShipment(): void {
-  if (!this.selectedRate() || this.form.invalid || this.shipmentLoading()) {
+  if (this.shipmentLoading()) {
+    return;
+  }
+
+  if (!this.selectedRate()) {
+    this.errorMessage.set(
+      'Please select a shipping rate before creating the shipment.'
+    );
+    return;
+  }
+
+  if (this.form.invalid) {
+    this.form.markAllAsTouched();
+    this.errorMessage.set(
+      'Please correct the highlighted fields before creating the shipment.'
+    );
     return;
   }
 
@@ -157,21 +460,6 @@ onShipment(): void {
 
       console.log('===== SHIPMENT API RESPONSE =====');
       console.log(response);
-      console.log('Response type:', typeof response);
-
-      console.log('Labels:', response?.labels);
-      console.log(
-        'PDF content:',
-        response?.labels?.[0]?.content
-      );
-      console.log(
-        'PDF content type:',
-        typeof response?.labels?.[0]?.content
-      );
-      console.log(
-        'Tracking:',
-        response?.masterTrackingNumber
-      );
 
       this.downloadPDF(
         response.masterTrackingNumber,
@@ -215,7 +503,7 @@ onShipment(): void {
       attention: formValue.fromAttention,
       company: formValue.fromCompany,
       address1: formValue.fromAddress1,
-      postalCode: formValue.fromPostal,
+      postalCode: this.normalizePostalCode(formValue.fromPostal),
       phone: this.normalizePhone(formValue.fromPhone),
       email: formValue.fromEmail,
 
@@ -232,7 +520,7 @@ onShipment(): void {
       countryName: this.getCountryName(countryFrom),
       provinceName: this.getProvinceName(provinceFrom),
       cityName: formValue.fromCity,
-      alphaNumericPostalCode: formValue.fromPostal,
+      alphaNumericPostalCode: this.normalizePostalCode(formValue.fromPostal),
       countryCode: countryFrom
     },
 
@@ -240,11 +528,9 @@ onShipment(): void {
       attention: formValue.toAttention,
       company: formValue.toCompany,
       address1: formValue.toAddress1,
-      postalCode: formValue.toPostal,
+      postalCode: this.normalizePostalCode(formValue.toPostal),
       phone: this.normalizePhone(formValue.toPhone),
-
-      // Match your required payload exactly
-      email: 'info@eshipper.com',
+      email: formValue.toEmail,
 
       countryDTO: {
         name: countryTo
@@ -274,15 +560,13 @@ onShipment(): void {
       system: 'IMPERIAL'
     },
 
-    shipmentPackages: [
-      {
-        description: 'eCommerce',
-        height: 2,
-        length: 7,
-        weight: 1,
-        width: 5
-      }
-    ],
+    shipmentPackages: formValue.packages.map((pkg: any) => ({
+      description: pkg.description,
+      height: Number(pkg.height),
+      length: Number(pkg.length),
+      weight: Number(pkg.weight),
+      width: Number(pkg.width)
+    })),
 
     shippingOrderAddSvc: {
       ambientTemperatureRequired: false,
@@ -354,9 +638,27 @@ onShipment(): void {
   }
 
   private normalizePhone(phone: string): string {
-    // Remove all non-digit characters
+  // Remove all non-digit characters
     return phone.replace(/\D/g, '');
   }
+
+  private normalizePostalCode(postalCode: string): string {
+    return postalCode
+      .trim()
+      .toUpperCase()
+      .replace(/\s/g, '');
+  }
+
+  private getTodayDate(): string {
+  const today = new Date();
+
+  const year = today.getFullYear();
+  const month = String(today.getMonth() + 1).padStart(2, '0');
+  const day = String(today.getDate()).padStart(2, '0');
+
+  return `${year}-${month}-${day}`;
+}
+
 
   private getTomorrowDate(): string {
     const today = new Date();
