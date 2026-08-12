@@ -1,0 +1,35 @@
+<section class="card results-section" aria-labelledby="results-heading">
+  <div class="results-heading-row">
+    <h2 id="results-heading" class="section-heading section-heading--plain">Quote Results</h2>
+    <span class="results-count">{{ rates.length }} rate{{ rates.length === 1 ? '' : 's' }}</span>
+  </div>
+
+  <div class="table-wrap">
+    <table class="rate-table">
+      <thead>
+        <tr>
+          <th scope="col">Service Code</th>
+          <th scope="col" class="num">Charge</th>
+          <th scope="col" class="num">Fuel Surcharge</th>
+          <th scope="col" class="num">Est. Transit Days</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let rate of rates"
+            (click)="rateSelect.emit(rate)"
+            [class.selected]="selectedRate === rate"
+            class="rate-row">
+          <td>
+            <span class="rate-row__selector" aria-hidden="true"></span>
+            {{ rate.serviceCode }}
+          </td>
+          <td class="num num--charge">${{ rate.charge.toFixed(2) }}</td>
+          <td class="num">{{ rate.fuelSurchargePercent }}%</td>
+          <td class="num">
+            <span class="transit-pill">{{ rate.estTransitDays }} days</span>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</section>
