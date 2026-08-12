@@ -1,0 +1,137 @@
+/* ============================================================
+   Field Groups (Party / Address / Location / Contact)
+   ============================================================ */
+.field-group + .field-group {
+  margin-top: var(--space-5);
+  padding-top: var(--space-5);
+  border-top: 1px solid var(--line-100);
+}
+
+.field-group__title {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: var(--steel-300);
+  margin: 0 0 var(--space-3) 0;
+}
+
+.field label {
+  margin-top: var(--space-4);
+}
+
+/* ============================================================
+   Sections (From / To headings)
+   ============================================================ */
+.section-badge {
+  width: 26px;
+  height: 26px;
+  border-radius: var(--radius-sm);
+  background: var(--line-100);
+  color: var(--steel-500);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+}
+
+.section-badge svg {
+  width: 15px;
+  height: 15px;
+}
+
+.section-badge--accent {
+  background: var(--signal-100);
+  color: var(--signal-600);
+}
+
+/* ============================================================
+   Route section
+   ============================================================ */
+.route-grid {
+  display: grid;
+  grid-template-columns: 1fr 64px 1fr;
+  align-items: stretch;
+  gap: 0 var(--space-4);
+}
+
+/* Route connector — signature decorative element */
+.route-connector {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: var(--space-6) 0;
+}
+
+.route-connector__line {
+  width: 1px;
+  flex: 1;
+  min-height: 24px;
+  background-image: linear-gradient(var(--line-200) 60%, transparent 40%);
+  background-size: 1px 8px;
+  background-repeat: repeat-y;
+}
+
+.route-connector__node {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  border: 2px solid var(--steel-300);
+  background: var(--surface-1);
+  flex: none;
+}
+
+.route-connector__node--start {
+  border-color: var(--steel-500);
+}
+
+.route-connector__node--end {
+  border-color: var(--signal-500);
+  background: var(--signal-500);
+}
+
+.route-connector__glyph {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--ink-900);
+  color: var(--signal-500);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  box-shadow: var(--shadow-raised);
+}
+
+.route-connector__glyph svg {
+  width: 17px;
+  height: 17px;
+}
+
+/* ============================================================
+   Responsive
+   ============================================================ */
+@media (max-width: 900px) {
+  .route-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .route-connector {
+    flex-direction: row;
+    padding: var(--space-4) 0;
+  }
+
+  .route-connector__line {
+    width: auto;
+    height: 1px;
+    flex: 1;
+    min-height: 0;
+    min-width: 24px;
+    background-image: linear-gradient(to right, var(--line-200) 60%, transparent 40%);
+    background-size: 8px 1px;
+    background-repeat: repeat-x;
+  }
+}
