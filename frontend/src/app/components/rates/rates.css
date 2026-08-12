@@ -1,0 +1,264 @@
+/* ============================================================
+   Results
+   ============================================================ */
+
+.results-heading-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--space-4);
+}
+
+.results-count {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  color: var(--steel-500);
+  background: var(--line-100);
+  padding: 4px 10px;
+  border-radius: 999px;
+}
+
+
+/* ============================================================
+   Table Container
+   ============================================================ */
+
+.table-wrap {
+  overflow-x: auto;
+  border: 1px solid var(--line-200);
+  border-radius: var(--radius-sm);
+  background: var(--surface-0);
+}
+
+
+/* ============================================================
+   Rate Table
+   ============================================================ */
+
+.rate-table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 520px;
+  table-layout: fixed;
+}
+
+
+/* ============================================================
+   Table Header
+   ============================================================ */
+
+.rate-table thead {
+  background: var(--surface-0);
+  border-bottom: 1px solid var(--line-200);
+}
+
+.rate-table th {
+  text-align: center;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--steel-500);
+  padding: var(--space-3) var(--space-4);
+  white-space: nowrap;
+  vertical-align: middle;
+}
+
+
+/* ============================================================
+   Table Body
+   ============================================================ */
+
+.rate-table td {
+  padding: var(--space-3) var(--space-4);
+  border-bottom: 1px solid var(--line-100);
+  font-size: 14px;
+  color: var(--ink-800);
+  text-align: center;
+  vertical-align: middle;
+}
+
+.rate-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+
+/* ============================================================
+   Numeric Cells
+   ============================================================ */
+
+.rate-table td.num {
+  text-align: center;
+  font-family: var(--font-mono);
+  vertical-align: middle;
+}
+
+.rate-table th.num {
+  text-align: center;
+}
+
+
+/* ============================================================
+   Charge
+   ============================================================ */
+
+.num--charge {
+  font-weight: 600;
+  color: var(--ink-900);
+}
+
+.rate-table td.num--charge {
+  font-family: var(--font-mono);
+  font-weight: 600;
+  color: var(--ink-900);
+}
+
+
+/* ============================================================
+   Transit Days
+   ============================================================ */
+
+.transit-pill {
+  display: inline-block;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--steel-500);
+  background: var(--line-100);
+  padding: 2px 8px;
+  border-radius: 999px;
+}
+
+
+/* ============================================================
+   Rate Row
+   ============================================================ */
+
+.rate-row {
+  cursor: pointer;
+  transition: background 0.15s ease;
+  position: relative;
+}
+
+.rate-row:hover {
+  background: rgba(255, 90, 31, 0.04);
+}
+
+
+/* ============================================================
+   Selection Indicator
+   ============================================================ */
+
+.rate-row__selector {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  border: 1.5px solid var(--line-200);
+  margin-right: var(--space-2);
+  vertical-align: middle;
+  transition:
+    border-color 0.15s ease,
+    background 0.15s ease;
+}
+
+
+/* ============================================================
+   Selected Row
+   ============================================================ */
+
+.rate-row.selected {
+  background: var(--signal-100);
+  box-shadow: inset 3px 0 0 var(--signal-500);
+}
+
+.rate-row.selected td {
+  font-weight: 600;
+  color: var(--signal-600);
+}
+
+.rate-row.selected .num--charge {
+  color: var(--signal-600);
+}
+
+
+/* Selected indicator */
+
+.rate-row.selected .rate-row__selector {
+  border-color: var(--signal-500);
+  background: var(--signal-500);
+}
+
+
+/* Selected transit pill */
+
+.rate-row.selected .transit-pill {
+  background: rgba(255, 90, 31, 0.14);
+  color: var(--signal-600);
+}
+
+
+/* ============================================================
+   Column Widths
+   Keeps the table visually balanced
+   ============================================================ */
+
+.rate-table th:nth-child(1),
+.rate-table td:nth-child(1) {
+  width: 25%;
+}
+
+.rate-table th:nth-child(2),
+.rate-table td:nth-child(2) {
+  width: 25%;
+}
+
+.rate-table th:nth-child(3),
+.rate-table td:nth-child(3) {
+  width: 25%;
+}
+
+.rate-table th:nth-child(4),
+.rate-table td:nth-child(4) {
+  width: 25%;
+}
+
+
+/* ============================================================
+   Responsive
+   ============================================================ */
+
+@media (max-width: 480px) {
+
+  .results-heading-row {
+    flex-wrap: wrap;
+    gap: var(--space-2);
+  }
+
+  .rate-table {
+    min-width: 520px;
+  }
+
+  .rate-table th,
+  .rate-table td {
+    padding: var(--space-3);
+  }
+}
+
+
+/* ============================================================
+   Reduced Motion
+   ============================================================ */
+
+@media (prefers-reduced-motion: reduce) {
+
+  .rate-row {
+    transition: none;
+  }
+
+  .rate-row__selector {
+    transition: none;
+  }
+}
