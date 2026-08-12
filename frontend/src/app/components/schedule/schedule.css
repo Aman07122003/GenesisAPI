@@ -1,0 +1,257 @@
+/* ============================================================
+   Schedule Panel
+   ============================================================ */
+
+.date-time-section {
+  position: relative;
+  overflow: hidden;
+
+  background:
+    radial-gradient(
+      circle at top right,
+      rgba(255, 90, 31, 0.14),
+      transparent 35%
+    ),
+    linear-gradient(
+      135deg,
+      var(--ink-900) 0%,
+      var(--ink-800) 55%,
+      var(--ink-700) 100%
+    );
+
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 16px;
+
+  padding: var(--space-6);
+
+  box-shadow:
+    0 12px 30px rgba(0, 0, 0, 0.16),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05);
+}
+
+
+/* Subtle decorative glow */
+.date-time-section::before {
+  content: "";
+  position: absolute;
+  width: 180px;
+  height: 180px;
+
+  top: -100px;
+  right: -70px;
+
+  background: rgba(255, 90, 31, 0.12);
+  border-radius: 50%;
+
+  filter: blur(30px);
+  pointer-events: none;
+}
+
+
+/* ============================================================
+   Panel Heading
+   ============================================================ */
+
+.panel-heading {
+  position: relative;
+  z-index: 1;
+
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  margin-bottom: 20px;
+
+  font-family: var(--font-display);
+  font-size: 13px;
+  font-weight: 700;
+
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+
+.panel-heading--dark {
+  color: rgba(255, 255, 255, 0.92);
+}
+
+
+/* Calendar icon */
+.panel-heading__icon {
+  width: 18px;
+  height: 18px;
+
+  color: var(--signal-500);
+
+  flex-shrink: 0;
+}
+
+
+/* Small line after "Schedule" */
+.panel-heading::after {
+  content: "";
+
+  height: 1px;
+  flex: 1;
+
+  margin-left: 6px;
+
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0.14),
+    transparent
+  );
+}
+
+
+/* ============================================================
+   Fields
+   ============================================================ */
+
+.date-time-section .field-row {
+  position: relative;
+  z-index: 1;
+
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+
+  gap: 16px;
+}
+
+
+.date-time-section .field {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+
+/* Labels */
+.date-time-section .field label {
+  color: rgba(255, 255, 255, 0.62);
+
+  font-size: 11px;
+  font-weight: 600;
+
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+
+/* ============================================================
+   Inputs
+   ============================================================ */
+
+.date-time-section .input {
+  width: 100%;
+  min-height: 46px;
+
+  padding: 0 13px;
+
+  background: rgba(255, 255, 255, 0.075);
+
+  border: 1px solid rgba(255, 255, 255, 0.13);
+  border-radius: 10px;
+
+  color: #fff;
+
+  font-family: inherit;
+  font-size: 14px;
+
+  outline: none;
+
+  color-scheme: dark;
+
+  transition:
+    background 160ms ease,
+    border-color 160ms ease,
+    box-shadow 160ms ease,
+    transform 160ms ease;
+}
+
+
+/* Placeholder */
+.date-time-section .input::placeholder {
+  color: rgba(255, 255, 255, 0.35);
+}
+
+
+/* Hover */
+.date-time-section .input:hover {
+  background: rgba(255, 255, 255, 0.10);
+  border-color: rgba(255, 255, 255, 0.25);
+}
+
+
+/* Focus */
+.date-time-section .input:focus-visible {
+  background: rgba(255, 255, 255, 0.12);
+
+  border-color: var(--signal-500);
+
+  box-shadow:
+    0 0 0 3px rgba(255, 90, 31, 0.18),
+    0 4px 12px rgba(0, 0, 0, 0.15);
+
+  transform: translateY(-1px);
+}
+
+
+/* ============================================================
+   Date / Time picker icons
+   ============================================================ */
+
+.date-time-section input[type="date"]::-webkit-calendar-picker-indicator,
+.date-time-section input[type="time"]::-webkit-calendar-picker-indicator {
+  cursor: pointer;
+
+  opacity: 0.7;
+
+  transition:
+    opacity 160ms ease,
+    transform 160ms ease;
+}
+
+
+.date-time-section input[type="date"]:hover::-webkit-calendar-picker-indicator,
+.date-time-section input[type="time"]:hover::-webkit-calendar-picker-indicator {
+  opacity: 1;
+  transform: scale(1.08);
+}
+
+
+/* ============================================================
+   Validation State
+   ============================================================ */
+
+.date-time-section .input.ng-invalid.ng-touched {
+  border-color: #ef4444;
+
+  box-shadow:
+    0 0 0 3px rgba(239, 68, 68, 0.12);
+}
+
+
+/* ============================================================
+   Responsive
+   ============================================================ */
+
+@media (max-width: 640px) {
+  .date-time-section {
+    padding: 18px;
+    border-radius: 14px;
+  }
+
+  .date-time-section .field-row {
+    grid-template-columns: 1fr;
+    gap: 14px;
+  }
+
+  .panel-heading {
+    margin-bottom: 16px;
+  }
+
+  .date-time-section .input {
+    min-height: 48px;
+  }
+}
