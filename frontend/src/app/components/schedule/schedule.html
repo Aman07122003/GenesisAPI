@@ -48,6 +48,8 @@
         id="ship-date"
         formControlName="scheduledShipDate"
         class="input"
+        [min]="minDate"
+        (change)="onDateChange()"
       >
     </div>
 
@@ -61,6 +63,7 @@
         id="ship-time"
         formControlName="scheduledShipTime"
         class="input"
+        [min]="minTime"
       >
     </div>
 

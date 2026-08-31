@@ -8,7 +8,7 @@ import { ShipmentRequest, ShipmentResponse } from '../types';
   providedIn: 'root'
 })
 export class ShipmentService {
-  private apiUrl = environment.production ? `${environment.apiBaseUrl}/shipments` : '/shipments';
+  private apiUrl = `${environment.apiBaseUrl}/shipments`;
 
   constructor(private http: HttpClient) {}
 

@@ -6,7 +6,6 @@ export interface AddressInfo {
   attention: string;
   company: string;
   address1: string;
-  address2?: string;
 
   postalCode: string;
 
@@ -60,46 +59,6 @@ export interface ShipmentUnitDTO {
 
 
 // ============================================================
-// Additional Services
-// ============================================================
-
-export interface ShippingOrderAddSvc {
-  ambientTemperatureRequired: boolean;
-  coldChainRequired: boolean;
-  crossBorderFee: boolean;
-  customsFreight: boolean;
-  dangerousGoods: number;
-  deliveryAppt: boolean;
-  docsOnly: boolean;
-  excessLength: boolean;
-  exibitionSite: boolean;
-  heated: boolean;
-  hold: boolean;
-  homelandSecurity: boolean;
-  inBondFee: boolean;
-  insideDelivery: boolean;
-  insidePickup: boolean;
-  keepCoolRequired: boolean;
-  limitedAccess: boolean;
-  militaryBaseDelivery: boolean;
-  pierCharge: boolean;
-  returnService: boolean;
-  satDelivery: boolean;
-  saturdayPickup: boolean;
-  shipFromTailgate: boolean;
-  shipToTailgate: boolean;
-  signatureRequired: number;
-  singleShipment: boolean;
-  fbaApproved: boolean;
-  sortSegregate: boolean;
-  noSafeDrop: boolean;
-  insuranceType: number;
-  insuredAmount: number;
-  fbaapproved: boolean;
-}
-
-
-// ============================================================
 // COD
 // ============================================================
 
@@ -124,11 +83,7 @@ export interface QuoteRequest {
 
   shipmentPackages: ShipmentPackage[];
 
-  shippingOrderAddSvc: ShippingOrderAddSvc;
-
   shippingOrderCODService: ShippingOrderCODService;
-
-  codAddress: null;
 
   currencyCode: string;
 }
@@ -139,6 +94,7 @@ export interface QuoteRequest {
 // ============================================================
 
 export interface Rate {
+  serviceName: string;
   serviceCode: string;
   charge: number;
   fuelSurchargePercent: number;

@@ -8,7 +8,7 @@
     <table class="rate-table">
       <thead>
         <tr>
-          <th scope="col">Service Code</th>
+          <th scope="col">Service Name</th>
           <th scope="col" class="num">Charge</th>
           <th scope="col" class="num">Fuel Surcharge</th>
           <th scope="col" class="num">Est. Transit Days</th>
@@ -21,7 +21,7 @@
             class="rate-row">
           <td>
             <span class="rate-row__selector" aria-hidden="true"></span>
-            {{ rate.serviceCode }}
+            {{ rate.serviceName }}
           </td>
           <td class="num num--charge">${{ rate.charge.toFixed(2) }}</td>
           <td class="num">{{ rate.fuelSurchargePercent }}%</td>

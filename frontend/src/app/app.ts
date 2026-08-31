@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators, FormArray, AbstractControl, ValidationErrors } from '@angular/forms';
 import { QuoteService } from './service/quote.service';
 import { ShipmentService } from './service/shipment.service';
-import { Rate, QuoteRequest, ShipmentRequest, ShippingOrderAddSvc } from './types';
+import { Rate, QuoteRequest, ShipmentRequest} from './types';
 import { Schedule } from './components/schedule/schedule';
 import { Route } from './components/route/route';
 import { Packages } from './components/packages/packages';
@@ -568,46 +568,9 @@ onShipment(): void {
       width: Number(pkg.width)
     })),
 
-    shippingOrderAddSvc: {
-      ambientTemperatureRequired: false,
-      coldChainRequired: false,
-      crossBorderFee: false,
-      customsFreight: false,
-      dangerousGoods: 0,
-      deliveryAppt: false,
-      docsOnly: false,
-      excessLength: false,
-      exibitionSite: false,
-      heated: false,
-      hold: false,
-      homelandSecurity: false,
-      inBondFee: false,
-      insideDelivery: false,
-      insidePickup: false,
-      keepCoolRequired: false,
-      limitedAccess: false,
-      militaryBaseDelivery: false,
-      pierCharge: false,
-      returnService: false,
-      satDelivery: false,
-      saturdayPickup: false,
-      shipFromTailgate: false,
-      shipToTailgate: false,
-      signatureRequired: 0,
-      singleShipment: false,
-      fbaApproved: false,
-      sortSegregate: false,
-      noSafeDrop: false,
-      insuranceType: 0,
-      insuredAmount: 0.0,
-      fbaapproved: false
-    },
-
     shippingOrderCODService: {
       codServiceId: 0
     },
-
-    codAddress: null,
 
     currencyCode: 'CAD'
   };
@@ -668,43 +631,6 @@ onShipment(): void {
     const month = String(tomorrow.getMonth() + 1).padStart(2, '0');
     const day = String(tomorrow.getDate()).padStart(2, '0');
     return `${year}-${month}-${day}`;
-  }
-
-  private getDefaultAddSvc(): ShippingOrderAddSvc {
-    return {
-      ambientTemperatureRequired: false,
-      coldChainRequired: false,
-      crossBorderFee: false,
-      customsFreight: false,
-      dangerousGoods: 0,
-      deliveryAppt: false,
-      docsOnly: false,
-      excessLength: false,
-      exibitionSite: false,
-      heated: false,
-      hold: false,
-      homelandSecurity: false,
-      inBondFee: false,
-      insideDelivery: false,
-      insidePickup: false,
-      keepCoolRequired: false,
-      limitedAccess: false,
-      militaryBaseDelivery: false,
-      pierCharge: false,
-      returnService: false,
-      satDelivery: false,
-      saturdayPickup: false,
-      shipFromTailgate: false,
-      shipToTailgate: false,
-      signatureRequired: 0,
-      singleShipment: false,
-      fbaApproved: false,
-      sortSegregate: false,
-      noSafeDrop: false,
-      insuranceType: 0,
-      insuredAmount: 0.0,
-      fbaapproved: false
-    };
   }
 
   private downloadPDF(
