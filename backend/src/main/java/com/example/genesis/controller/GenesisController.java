@@ -6,7 +6,11 @@ import com.example.genesis.dto.response.QuoteResponse;
 import com.example.genesis.dto.response.ShipmentResponse;
 import com.example.genesis.service.GenesisService;
 import jakarta.validation.Valid;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 /**
  * REST controller that exposes the application's quotation and shipment
@@ -27,10 +31,11 @@ public final class GenesisController {
     /**
      * Creates the Genesis controller with the required service.
      *
-     * @param service service responsible for coordinating Genesis API operations
+     * @param genesisService service responsible for coordinating
+     *                       Genesis API operations
      */
-    public GenesisController(final GenesisService service) {
-        this.service = service;
+    public GenesisController(final GenesisService genesisService) {
+        this.service = genesisService;
     }
 
     /**

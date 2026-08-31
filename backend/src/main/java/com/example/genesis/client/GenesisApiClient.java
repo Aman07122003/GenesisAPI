@@ -21,10 +21,14 @@ import org.springframework.web.client.RestClient;
 @Component
 public final class GenesisApiClient {
 
-    private static final String BASE_URL = "https://genesis.eshipper.com";
+    private static final String BASE_URL =
+            "https://genesis.eshipper.com";
+    private static final String SHIPMENTS_PATH =
+            "/api/shipments";
+    private static final String QUOTES_PATH =
+            "/api/quotes";
+
     private final RestClient restClient;
-    private static final String SHIPMENTS_PATH = "/api/shipments";
-    private static final String QUOTES_PATH = "/api/quotes";
 
     /**
      * Creates a Genesis API client using the configured Genesis API base URL.
@@ -56,7 +60,8 @@ public final class GenesisApiClient {
     }
 
     /**
-     * Retrieves available shipping quotations for the supplied shipment details.
+     * Retrieves available shipping quotations for the supplied
+     * shipment details.
      *
      * <p>The request is sent to the Genesis quotation endpoint as JSON.
      * The response contains the available shipping rates, including their

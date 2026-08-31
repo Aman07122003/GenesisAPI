@@ -17,6 +17,7 @@ import java.util.List;
  * <p>The labels are stored as an immutable list to prevent callers from
  * modifying the response data after it has been created.</p>
  */
+@SuppressWarnings("LombokGetterMayBeUsed")
 public final class ShipmentResponse {
 
     private final List<LabelResponse> labels;

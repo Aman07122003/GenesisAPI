@@ -43,19 +43,20 @@ public final class QuoteRequest {
     @JsonProperty
     private final AddressRequest shipFrom;
 
-    @Valid
-    @NotNull
-    @JsonProperty
-    private final AddressRequest shipTo;
-
     @NotEmpty
     @Size(max = 30)
     @JsonProperty
     private final List<@NotNull @Valid PackageItemRequest> shipmentPackages;
 
     @Valid
+    @NotNull
     @JsonProperty
     private final ShipmentUnitRequest shipmentPackageUnits;
+
+    @Valid
+    @NotNull
+    @JsonProperty
+    private final AddressRequest shipTo;
 
     /**
      * Creates a quotation request containing the shipment information
@@ -64,13 +65,15 @@ public final class QuoteRequest {
      * <p>The constructor is used by Jackson to deserialize the JSON
      * request received from the Angular frontend.</p>
      *
-     * @param currencyCode       three-character currency code used for
-     *                           quotation pricing, such as {@code CAD}
-     * @param packageTypeDTO     package type associated with the shipment
-     * @param scheduledShipDate  requested shipment date and time
-     * @param shipFrom           origin address of the shipment
-     * @param shipTo             destination address of the shipment
-     * @param shipmentPackages   packages included in the shipment
+     * @param currencyCode         three-character currency code used for
+     *                             quotation pricing, such as {@code CAD}
+     * @param packageTypeDTO       package type associated with the shipment
+     * @param scheduledShipDate    requested shipment date and time
+     * @param shipFrom             origin address of the shipment
+     * @param shipmentPackages     packages included in the shipment
+     * @param shipmentPackageUnits measurement unit configuration used for
+     *                             package dimensions and weight
+     * @param shipTo               destination address of the shipment
      */
     @JsonCreator
     public QuoteRequest(
@@ -81,22 +84,22 @@ public final class QuoteRequest {
             final String scheduledShipDate,
             @JsonProperty("shipFrom")
             final AddressRequest shipFrom,
-            @JsonProperty("shipTo")
-            final AddressRequest shipTo,
             @JsonProperty("shipmentPackages")
             final List<PackageItemRequest> shipmentPackages,
             @JsonProperty("shipmentPackageUnits")
-            final ShipmentUnitRequest shipmentPackageUnits) {
+            final ShipmentUnitRequest shipmentPackageUnits,
+            @JsonProperty("shipTo")
+            final AddressRequest shipTo) {
 
         this.currencyCode = currencyCode;
         this.packageTypeDTO = packageTypeDTO;
         this.scheduledShipDate = scheduledShipDate;
         this.shipFrom = shipFrom;
-        this.shipTo = shipTo;
         this.shipmentPackages = shipmentPackages == null
                 ? List.of()
                 : List.copyOf(shipmentPackages);
         this.shipmentPackageUnits = shipmentPackageUnits;
+        this.shipTo = shipTo;
     }
 
     /**
@@ -136,15 +139,6 @@ public final class QuoteRequest {
     }
 
     /**
-     * Returns the destination address to which the shipment will be delivered.
-     *
-     * @return shipment destination address
-     */
-    public AddressRequest getShipTo() {
-        return shipTo;
-    }
-
-    /**
      * Returns the packages included in the quotation request.
      *
      * <p>The returned list is immutable, preventing callers from modifying
@@ -163,5 +157,14 @@ public final class QuoteRequest {
      */
     public ShipmentUnitRequest getShipmentPackageUnits() {
         return shipmentPackageUnits;
+    }
+
+    /**
+     * Returns the destination address to which the shipment will be delivered.
+     *
+     * @return shipment destination address
+     */
+    public AddressRequest getShipTo() {
+        return shipTo;
     }
 }
