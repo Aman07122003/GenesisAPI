@@ -2,48 +2,61 @@ package com.example.genesis.controller;
 
 import com.example.genesis.dto.request.QuoteRequest;
 import com.example.genesis.dto.request.ShipmentRequest;
+import com.example.genesis.dto.response.CurrencyRatesResponse;
 import com.example.genesis.dto.response.QuoteResponse;
 import com.example.genesis.dto.response.ShipmentResponse;
+import com.example.genesis.service.CurrencyService;
 import com.example.genesis.service.GenesisService;
 import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
- * REST controller that exposes the application's quotation and shipment
- * endpoints to the frontend.
+ * REST controller that exposes shipment quotation, shipment creation,
+ * and currency exchange-rate endpoints to the frontend application.
  *
- * <p>The controller is responsible for receiving and validating incoming
- * HTTP requests and delegating the processing to {@link GenesisService}.
- * Business logic and external API communication are handled by the service
- * and API client layers respectively.</p>
+ * <p>The controller is responsible for receiving HTTP requests,
+ * validating request payloads, and delegating processing to the
+ * appropriate service layer.</p>
  */
-@CrossOrigin(origins = "http://localhost:4200")
+@CrossOrigin(origins = {
+        "http://localhost:4200",
+        "https://production.d3223rut17avj1.amplifyapp.com"
+})
 @RestController
 @RequestMapping("/api")
 public final class GenesisController {
 
     private final GenesisService service;
+    private final CurrencyService currencyService;
 
     /**
-     * Creates the Genesis controller with the required service.
+     * Creates the controller with the required application services.
      *
-     * @param genesisService service responsible for coordinating
-     *                       Genesis API operations
+     * @param genesisService service responsible for shipment and quotation
+     *                       operations
+     * @param currencyService service responsible for retrieving currency
+     *                        exchange rates
      */
-    public GenesisController(final GenesisService genesisService) {
+    public GenesisController(
+            final GenesisService genesisService,
+            final CurrencyService currencyService) {
+
         this.service = genesisService;
+        this.currencyService = currencyService;
     }
 
     /**
      * Creates a shipment using the supplied shipment details.
      *
-     * <p>The request is validated before being passed to the service.
-     * The response contains the generated master tracking number and
-     * shipment labels returned by the Genesis API.</p>
+     * <p>The request is validated before being delegated to the
+     * {@link GenesisService}. The returned response contains shipment
+     * tracking information and generated shipping labels.</p>
      *
      * @param request validated shipment request
      * @return shipment response containing tracking information and labels
@@ -56,11 +69,30 @@ public final class GenesisController {
     }
 
     /**
+     * Retrieves currency exchange rates for the requested base currency.
+     *
+     * <p>If no base currency is provided, CAD is used by default.</p>
+     *
+     * <p>Example request:
+     * {@code GET /api/currency/rates?base=CAD}</p>
+     *
+     * @param base base currency code, for example {@code CAD}
+     * @return response containing the supported currency exchange rates
+     */
+    @GetMapping("/currency/rates")
+    public CurrencyRatesResponse getCurrencyRates(
+            @RequestParam(defaultValue = "CAD") final String base) {
+
+        return currencyService.getRates(base);
+    }
+
+    /**
      * Retrieves available shipping quotations for the supplied shipment
      * details.
      *
-     * <p>The request is validated before being passed to the service.
-     * The response contains the shipping rates available for the shipment.</p>
+     * <p>The request is validated before being delegated to the
+     * {@link GenesisService}. The response contains the shipping rates
+     * available for the shipment.</p>
      *
      * @param request validated quotation request
      * @return quotation response containing available shipping rates
