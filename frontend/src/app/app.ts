@@ -1,9 +1,19 @@
 import { Component, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators, FormArray, AbstractControl, ValidationErrors } from '@angular/forms';
+import {
+  FormsModule,
+  ReactiveFormsModule,
+  FormBuilder,
+  FormGroup,
+  Validators,
+  FormArray,
+  AbstractControl,
+  ValidationErrors
+} from '@angular/forms';
+
 import { QuoteService } from './service/quote.service';
 import { ShipmentService } from './service/shipment.service';
-import { Rate, QuoteRequest, ShipmentRequest} from './types';
+import { Rate, QuoteRequest, ShipmentRequest } from './types';
 import { Schedule } from './components/schedule/schedule';
 import { Route } from './components/route/route';
 import { Packages } from './components/packages/packages';
@@ -13,7 +23,16 @@ import { Actions } from './components/actions/actions';
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [CommonModule, FormsModule, ReactiveFormsModule, Schedule, Route, Packages, Rates, Actions],
+  imports: [
+    CommonModule,
+    FormsModule,
+    ReactiveFormsModule,
+    Schedule,
+    Route,
+    Packages,
+    Rates,
+    Actions
+  ],
   templateUrl: './app.html',
   styleUrl: './app.css'
 })
@@ -26,7 +45,9 @@ export class App {
   shipmentLoading = signal(false);
   errorMessage = signal('');
 
-  shipmentEnabled = computed(() => this.selectedRate() !== null && !this.shipmentLoading());
+  shipmentEnabled = computed(
+    () => this.selectedRate() !== null && !this.shipmentLoading()
+  );
 
   constructor(
     private fb: FormBuilder,
@@ -36,576 +57,737 @@ export class App {
     this.form = this.createForm();
   }
 
+  // ============================================================
+  // PACKAGE
+  // ============================================================
+
   private createPackage(): FormGroup {
-  return this.fb.group({
-    description: [
-      '',
-      [
-        Validators.required,
-        this.noWhitespaceValidator.bind(this),
-        Validators.maxLength(100)
+    return this.fb.group({
+      description: [
+        'eCommerce',
+        [
+          Validators.required,
+          this.noWhitespaceValidator.bind(this),
+          Validators.maxLength(100)
+        ]
+      ],
+
+      length: [
+        7,
+        [
+          Validators.required,
+          Validators.min(0.01),
+          Validators.max(9999)
+        ]
+      ],
+
+      width: [
+        5,
+        [
+          Validators.required,
+          Validators.min(0.01),
+          Validators.max(9999)
+        ]
+      ],
+
+      height: [
+        2,
+        [
+          Validators.required,
+          Validators.min(0.01),
+          Validators.max(9999)
+        ]
+      ],
+
+      weight: [
+        1,
+        [
+          Validators.required,
+          Validators.min(0.01),
+          Validators.max(9999)
+        ]
       ]
-    ],
-
-    length: [
-      '',
-      [
-        Validators.required,
-        Validators.min(0.01),
-        Validators.max(9999)
-      ]
-    ],
-
-    width: [
-      '',
-      [
-        Validators.required,
-        Validators.min(0.01),
-        Validators.max(9999)
-      ]
-    ],
-
-    height: [
-      '',
-      [
-        Validators.required,
-        Validators.min(0.01),
-        Validators.max(9999)
-      ]
-    ],
-
-    weight: [
-      '',
-      [
-        Validators.required,
-        Validators.min(0.01),
-        Validators.max(9999)
-      ]
-    ]
-  });
-}
-
-private noWhitespaceValidator(
-  control: AbstractControl
-): ValidationErrors | null {
-  const value = control.value;
-
-  if (typeof value !== 'string') {
-    return null;
+    });
   }
 
-  return value.trim().length === 0
-    ? { whitespace: true }
-    : null;
-}
+  // ============================================================
+  // VALIDATORS
+  // ============================================================
 
-private canadianPostalCodeValidator(
-  control: AbstractControl
-): ValidationErrors | null {
-  const value = control.value;
+  private noWhitespaceValidator(
+    control: AbstractControl
+  ): ValidationErrors | null {
+    const value = control.value;
 
-  if (!value) {
-    return null;
+    if (typeof value !== 'string') {
+      return null;
+    }
+
+    return value.trim().length === 0
+      ? { whitespace: true }
+      : null;
   }
 
-  const postalCode = value
-    .toString()
-    .trim()
-    .toUpperCase()
-    .replace(/\s/g, '');
+  private canadianPostalCodeValidator(
+    control: AbstractControl
+  ): ValidationErrors | null {
+    const value = control.value;
 
-  const canadianPostalRegex =
-    /^[ABCEGHJ-NPRSTVXY]\d[ABCEGHJ-NPRSTV-Z]\d[ABCEGHJ-NPRSTV-Z]\d$/;
+    if (!value) {
+      return null;
+    }
 
-  return canadianPostalRegex.test(postalCode)
-    ? null
-    : { invalidPostalCode: true };
-}
+    const postalCode = value
+      .toString()
+      .trim()
+      .toUpperCase()
+      .replace(/\s/g, '');
 
-private phoneValidator(
-  control: AbstractControl
-): ValidationErrors | null {
-  const value = control.value;
+    const canadianPostalRegex =
+      /^[ABCEGHJ-NPRSTVXY]\d[ABCEGHJ-NPRSTV-Z]\d[ABCEGHJ-NPRSTV-Z]\d$/;
 
-  if (!value) {
-    return null;
+    return canadianPostalRegex.test(postalCode)
+      ? null
+      : { invalidPostalCode: true };
   }
 
-  const digits = value
-    .toString()
-    .replace(/\D/g, '');
+  private phoneValidator(
+    control: AbstractControl
+  ): ValidationErrors | null {
+    const value = control.value;
 
-  return digits.length === 10
-    ? null
-    : { invalidPhone: true };
-}
+    if (!value) {
+      return null;
+    }
 
-private futureOrTodayDateValidator(
-  control: AbstractControl
-): ValidationErrors | null {
-  if (!control.value) {
-    return null;
+    const digits = value
+      .toString()
+      .replace(/\D/g, '');
+
+    return digits.length === 10
+      ? null
+      : { invalidPhone: true };
   }
 
-  const selectedDate = new Date(`${control.value}T00:00:00`);
+  private futureOrTodayDateValidator(
+    control: AbstractControl
+  ): ValidationErrors | null {
+    if (!control.value) {
+      return null;
+    }
 
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
+    const selectedDate = new Date(
+      `${control.value}T00:00:00`
+    );
 
-  return selectedDate >= today
-    ? null
-    : { pastDate: true };
-}
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    return selectedDate >= today
+      ? null
+      : { pastDate: true };
+  }
+
+  // ============================================================
+  // PACKAGE ARRAY
+  // ============================================================
 
   get packages(): FormArray {
-  return this.form.get('packages') as FormArray;
-}
-
-addPackage(): void {
-  this.packages.push(this.createPackage());
-}
-
-removePackage(index: number): void {
-  if (this.packages.length <= 1) {
-    return;
+    return this.form.get('packages') as FormArray;
   }
 
-  this.packages.removeAt(index);
-}
+  addPackage(): void {
+    this.packages.push(this.createPackage());
+  }
+
+  removePackage(index: number): void {
+    if (this.packages.length <= 1) {
+      return;
+    }
+
+    this.packages.removeAt(index);
+  }
+
+  // ============================================================
+  // FORM
+  // ============================================================
 
   private createForm(): FormGroup {
-  return this.fb.group({
+    return this.fb.group({
 
-    scheduledShipDate: [
-      this.getTodayDate(),
-      [
-        Validators.required,
-        this.futureOrTodayDateValidator.bind(this)
-      ]
-    ],
+      // ========================================================
+      // SCHEDULE
+      // ========================================================
 
-    scheduledShipTime: [
-      '11:00',
-      [
-        Validators.required,
-        Validators.pattern(/^([01]\d|2[0-3]):[0-5]\d$/)
-      ]
-    ],
+      scheduledShipDate: [
+        this.getTodayDate(),
+        [
+          Validators.required,
+          this.futureOrTodayDateValidator.bind(this)
+        ]
+      ],
 
-    // =========================
-    // FROM
-    // =========================
+      scheduledShipTime: [
+        '11:00',
+        [
+          Validators.required,
+          Validators.pattern(
+            /^([01]\d|2[0-3]):[0-5]\d$/
+          )
+        ]
+      ],
 
-    fromAttention: [
-      '',
-      [
-        Validators.required,
-        this.noWhitespaceValidator.bind(this),
-        Validators.maxLength(100)
-      ]
-    ],
+      // ========================================================
+      // FROM
+      // ========================================================
 
-    fromCompany: [
-      '',
-      [
-        Validators.required,
-        this.noWhitespaceValidator.bind(this),
-        Validators.maxLength(100)
-      ]
-    ],
+      fromAttention: [
+        'Sender',
+        [
+          Validators.required,
+          this.noWhitespaceValidator.bind(this),
+          Validators.maxLength(100)
+        ]
+      ],
 
-    fromAddress1: [
-      '',
-      [
-        Validators.required,
-        this.noWhitespaceValidator.bind(this),
-        Validators.maxLength(200)
-      ]
-    ],
+      fromCompany: [
+        'Sender',
+        [
+          Validators.required,
+          this.noWhitespaceValidator.bind(this),
+          Validators.maxLength(100)
+        ]
+      ],
 
-    fromAddress2: [
-      '',
-      [
-        Validators.maxLength(200)
-      ]
-    ],
+      fromAddress1: [
+        '9 Van der Graaf Crt',
+        [
+          Validators.required,
+          this.noWhitespaceValidator.bind(this),
+          Validators.maxLength(200)
+        ]
+      ],
 
-    fromCity: [
-      '',
-      [
-        Validators.required,
-        this.noWhitespaceValidator.bind(this),
-        Validators.maxLength(100)
-      ]
-    ],
+      fromAddress2: [
+        '',
+        [
+          Validators.maxLength(200)
+        ]
+      ],
 
-    fromProvince: [
-      '',
-      [
-        Validators.required
-      ]
-    ],
+      fromCity: [
+        'Brampton',
+        [
+          Validators.required,
+          this.noWhitespaceValidator.bind(this),
+          Validators.maxLength(100)
+        ]
+      ],
 
-    fromPostal: [
-      '',
-      [
-        Validators.required,
-        this.canadianPostalCodeValidator.bind(this)
-      ]
-    ],
+      fromProvince: [
+        'ON',
+        [
+          Validators.required
+        ]
+      ],
 
-    fromCountry: [
-      'CA',
-      [
-        Validators.required
-      ]
-    ],
+      fromPostal: [
+        'L6T5E5',
+        [
+          Validators.required,
+          this.canadianPostalCodeValidator.bind(this)
+        ]
+      ],
 
-    fromPhone: [
-      '',
-      [
-        Validators.required,
-        this.phoneValidator.bind(this)
-      ]
-    ],
+      fromCountry: [
+        'CA',
+        [
+          Validators.required
+        ]
+      ],
 
-    fromEmail: [
-      '',
-      [
-        Validators.required,
-        Validators.email
-      ]
-    ],
+      fromPhone: [
+        '8773739222',
+        [
+          Validators.required,
+          this.phoneValidator.bind(this)
+        ]
+      ],
 
-    // =========================
-    // TO
-    // =========================
+      fromEmail: [
+        'info@eshipper.com',
+        [
+          Validators.required,
+          Validators.email
+        ]
+      ],
 
-    toAttention: [
-      '',
-      [
-        Validators.required,
-        this.noWhitespaceValidator.bind(this),
-        Validators.maxLength(100)
-      ]
-    ],
+      // ========================================================
+      // TO
+      // ========================================================
 
-    toCompany: [
-      '',
-      [
-        Validators.required,
-        this.noWhitespaceValidator.bind(this),
-        Validators.maxLength(100)
-      ]
-    ],
+      toAttention: [
+        'Recipient',
+        [
+          Validators.required,
+          this.noWhitespaceValidator.bind(this),
+          Validators.maxLength(100)
+        ]
+      ],
 
-    toAddress1: [
-      '',
-      [
-        Validators.required,
-        this.noWhitespaceValidator.bind(this),
-        Validators.maxLength(200)
-      ]
-    ],
+      toCompany: [
+        'Recipient',
+        [
+          Validators.required,
+          this.noWhitespaceValidator.bind(this),
+          Validators.maxLength(100)
+        ]
+      ],
 
-    toAddress2: [
-      '',
-      [
-        Validators.maxLength(200)
-      ]
-    ],
+      toAddress1: [
+        '3211 Grant McConachie Way',
+        [
+          Validators.required,
+          this.noWhitespaceValidator.bind(this),
+          Validators.maxLength(200)
+        ]
+      ],
 
-    toCity: [
-      '',
-      [
-        Validators.required,
-        this.noWhitespaceValidator.bind(this),
-        Validators.maxLength(100)
-      ]
-    ],
+      toAddress2: [
+        '',
+        [
+          Validators.maxLength(200)
+        ]
+      ],
 
-    toProvince: [
-      '',
-      [
-        Validators.required
-      ]
-    ],
+      toCity: [
+        'Richmond',
+        [
+          Validators.required,
+          this.noWhitespaceValidator.bind(this),
+          Validators.maxLength(100)
+        ]
+      ],
 
-    toPostal: [
-      '',
-      [
-        Validators.required,
-        this.canadianPostalCodeValidator.bind(this)
-      ]
-    ],
+      toProvince: [
+        'BC',
+        [
+          Validators.required
+        ]
+      ],
 
-    toCountry: [
-      'CA',
-      [
-        Validators.required
-      ]
-    ],
+      toPostal: [
+        'V7B0A4',
+        [
+          Validators.required,
+          this.canadianPostalCodeValidator.bind(this)
+        ]
+      ],
 
-    toPhone: [
-      '',
-      [
-        Validators.required,
-        this.phoneValidator.bind(this)
-      ]
-    ],
+      toCountry: [
+        'CA',
+        [
+          Validators.required
+        ]
+      ],
 
-    toEmail: [
-      '',
-      [
-        Validators.required,
-        Validators.email
-      ]
-    ],
+      toPhone: [
+        '6042077077',
+        [
+          Validators.required,
+          this.phoneValidator.bind(this)
+        ]
+      ],
 
-    // =========================
-    // PACKAGES
-    // =========================
+      toEmail: [
+        'info@eshipper.com',
+        [
+          Validators.required,
+          Validators.email
+        ]
+      ],
 
-    packages: this.fb.array([
-      this.createPackage()
-    ])
-  });
-}
+      // ========================================================
+      // PACKAGES
+      // ========================================================
+
+      packages: this.fb.array([
+        this.createPackage()
+      ])
+    });
+  }
+
+  // ============================================================
+  // GET QUOTE
+  // ============================================================
 
   onQuote(): void {
-  if (this.quoteLoading()) {
-    return;
-  }
+    if (this.quoteLoading()) {
+      return;
+    }
 
-  if (this.form.invalid) {
-    this.form.markAllAsTouched();
-    this.errorMessage.set(
-      'Please correct the highlighted fields before requesting a quote.'
+    if (this.form.invalid) {
+      this.form.markAllAsTouched();
+
+      this.errorMessage.set(
+        'Please correct the highlighted fields before requesting a quote.'
+      );
+
+      return;
+    }
+
+    this.errorMessage.set('');
+    this.quoteLoading.set(true);
+    this.selectedRate.set(null);
+    this.rates.set([]);
+
+    const request = this.buildQuoteRequest();
+
+    console.log(
+      'QUOTE REQUEST:',
+      JSON.stringify(request, null, 2)
     );
-    return;
-  }
 
-  this.errorMessage.set('');
-  this.quoteLoading.set(true);
-  this.selectedRate.set(null);
-  this.rates.set([]);
+    this.quoteService.getQuotes(request).subscribe({
+      next: (response) => {
+        this.quoteLoading.set(false);
 
-  const request = this.buildQuoteRequest();
+        if (
+          response.rates &&
+          response.rates.length > 0
+        ) {
+          this.rates.set(response.rates);
+        } else {
+          this.errorMessage.set(
+            'No shipping rates available for the selected shipment.'
+          );
+        }
+      },
 
-  console.log(
-    'QUOTE REQUEST:',
-    JSON.stringify(request, null, 2)
-  );
+      error: (error) => {
+        this.quoteLoading.set(false);
 
-  this.quoteService.getQuotes(request).subscribe({
-    next: (response) => {
-      this.quoteLoading.set(false);
-
-      if (response.rates && response.rates.length > 0) {
-        this.rates.set(response.rates);
-      } else {
         this.errorMessage.set(
-          'No shipping rates available for the selected shipment.'
+          error?.error?.message ||
+          'Failed to retrieve quotes. Please try again.'
         );
       }
-    },
+    });
+  }
 
-    error: (error) => {
-      this.quoteLoading.set(false);
+  // ============================================================
+  // CREATE SHIPMENT
+  // ============================================================
+
+  onShipment(): void {
+    if (this.shipmentLoading()) {
+      return;
+    }
+
+    if (!this.selectedRate()) {
+      this.errorMessage.set(
+        'Please select a shipping rate before creating the shipment.'
+      );
+
+      return;
+    }
+
+    if (this.form.invalid) {
+      this.form.markAllAsTouched();
 
       this.errorMessage.set(
-        error?.error?.message ||
-        'Failed to retrieve quotes. Please try again.'
+        'Please correct the highlighted fields before creating the shipment.'
       );
+
+      return;
     }
-  });
-}
 
-  
-onShipment(): void {
-  if (this.shipmentLoading()) {
-    return;
-  }
+    this.errorMessage.set('');
+    this.shipmentLoading.set(true);
 
-  if (!this.selectedRate()) {
-    this.errorMessage.set(
-      'Please select a shipping rate before creating the shipment.'
+    const request: ShipmentRequest = {
+      shippingOrderRateDTO:
+        this.buildQuoteRequest()
+    };
+
+    console.log(
+      'SHIPMENT REQUEST:',
+      JSON.stringify(request, null, 2)
     );
-    return;
+
+    this.shipmentService
+      .createShipment(request)
+      .subscribe({
+        next: (response) => {
+          this.shipmentLoading.set(false);
+
+          console.log(
+            '===== SHIPMENT API RESPONSE ====='
+          );
+
+          console.log(response);
+
+          this.downloadPDF(
+            response.masterTrackingNumber,
+            response?.labels?.[0]?.content
+          );
+        },
+
+        error: (error) => {
+          this.shipmentLoading.set(false);
+
+          console.error(
+            'SHIPMENT ERROR:',
+            error
+          );
+
+          console.error(
+            'SHIPMENT ERROR BODY:',
+            error?.error
+          );
+
+          this.errorMessage.set(
+            error?.error?.message ||
+            'Failed to create shipment. Please try again.'
+          );
+        }
+      });
   }
 
-  if (this.form.invalid) {
-    this.form.markAllAsTouched();
-    this.errorMessage.set(
-      'Please correct the highlighted fields before creating the shipment.'
-    );
-    return;
-  }
-
-  this.errorMessage.set('');
-  this.shipmentLoading.set(true);
-
-  const request: ShipmentRequest = {
-    shippingOrderRateDTO: this.buildQuoteRequest()
-  };
-
-  console.log(
-    'SHIPMENT REQUEST:',
-    JSON.stringify(request, null, 2)
-  );
-
-  this.shipmentService.createShipment(request).subscribe({
-    next: (response) => {
-      this.shipmentLoading.set(false);
-
-      console.log('===== SHIPMENT API RESPONSE =====');
-      console.log(response);
-
-      this.downloadPDF(
-        response.masterTrackingNumber,
-        response?.labels?.[0]?.content
-      );
-    },
-
-    error: (error) => {
-      this.shipmentLoading.set(false);
-
-      console.error('SHIPMENT ERROR:', error);
-      console.error('SHIPMENT ERROR BODY:', error?.error);
-
-      this.errorMessage.set(
-        error?.error?.message ||
-        'Failed to create shipment. Please try again.'
-      );
-    }
-  });
-}
-
+  // ============================================================
+  // SELECT RATE
+  // ============================================================
 
   selectRate(rate: Rate): void {
     this.selectedRate.set(rate);
   }
 
+  // ============================================================
+  // BUILD QUOTE REQUEST
+  // ============================================================
+
   private buildQuoteRequest(): QuoteRequest {
-  const formValue = this.form.getRawValue();
+    const formValue =
+      this.form.getRawValue();
 
-  const countryFrom = formValue.fromCountry;
-  const provinceFrom = formValue.fromProvince;
+    const countryFrom =
+      formValue.fromCountry;
 
-  const countryTo = formValue.toCountry;
-  const provinceTo = formValue.toProvince;
+    const provinceFrom =
+      formValue.fromProvince;
 
-  const scheduledShipDate =
-    `${formValue.scheduledShipDate} ${formValue.scheduledShipTime}`;
+    const countryTo =
+      formValue.toCountry;
 
-  return {
-    shipFrom: {
-      attention: formValue.fromAttention,
-      company: formValue.fromCompany,
-      address1: formValue.fromAddress1,
-      postalCode: this.normalizePostalCode(formValue.fromPostal),
-      phone: this.normalizePhone(formValue.fromPhone),
-      email: formValue.fromEmail,
+    const provinceTo =
+      formValue.toProvince;
 
-      countryDTO: {
-        name: countryFrom
+    const scheduledShipDate =
+      `${formValue.scheduledShipDate} ${formValue.scheduledShipTime}`;
+
+    return {
+      shipFrom: {
+        attention:
+          formValue.fromAttention,
+
+        company:
+          formValue.fromCompany,
+
+        address1:
+          formValue.fromAddress1,
+
+        postalCode:
+          this.normalizePostalCode(
+            formValue.fromPostal
+          ),
+
+        phone:
+          this.normalizePhone(
+            formValue.fromPhone
+          ),
+
+        email:
+          formValue.fromEmail,
+
+        countryDTO: {
+          name: countryFrom
+        },
+
+        provinceDTO: {
+          alpha2code:
+            provinceFrom,
+
+          countryCode:
+            countryFrom,
+
+          name:
+            `${countryFrom}-${provinceFrom}`
+        },
+
+        countryName:
+          this.getCountryName(
+            countryFrom
+          ),
+
+        provinceName:
+          this.getProvinceName(
+            provinceFrom
+          ),
+
+        cityName:
+          formValue.fromCity,
+
+        alphaNumericPostalCode:
+          this.normalizePostalCode(
+            formValue.fromPostal
+          ),
+
+        countryCode:
+          countryFrom
       },
 
-      provinceDTO: {
-        alpha2code: provinceFrom,
-        countryCode: countryFrom,
-        name: `${countryFrom}-${provinceFrom}`
+      shipTo: {
+        attention:
+          formValue.toAttention,
+
+        company:
+          formValue.toCompany,
+
+        address1:
+          formValue.toAddress1,
+
+        postalCode:
+          this.normalizePostalCode(
+            formValue.toPostal
+          ),
+
+        phone:
+          this.normalizePhone(
+            formValue.toPhone
+          ),
+
+        email:
+          formValue.toEmail,
+
+        countryDTO: {
+          name: countryTo
+        },
+
+        provinceDTO: {
+          alpha2code:
+            provinceTo,
+
+          countryCode:
+            countryTo,
+
+          name:
+            `${countryTo}-${provinceTo}`
+        },
+
+        countryName:
+          this.getCountryName(
+            countryTo
+          ),
+
+        provinceName:
+          this.getProvinceName(
+            provinceTo
+          ),
+
+        cityName:
+          formValue.toCity,
+
+        alphaNumericPostalCode:
+          formValue.toPostal,
+
+        countryCode:
+          countryTo
       },
 
-      countryName: this.getCountryName(countryFrom),
-      provinceName: this.getProvinceName(provinceFrom),
-      cityName: formValue.fromCity,
-      alphaNumericPostalCode: this.normalizePostalCode(formValue.fromPostal),
-      countryCode: countryFrom
-    },
+      scheduledShipDate,
 
-    shipTo: {
-      attention: formValue.toAttention,
-      company: formValue.toCompany,
-      address1: formValue.toAddress1,
-      postalCode: this.normalizePostalCode(formValue.toPostal),
-      phone: this.normalizePhone(formValue.toPhone),
-      email: formValue.toEmail,
-
-      countryDTO: {
-        name: countryTo
+      packageTypeDTO: {
+        name: 'Package'
       },
 
-      provinceDTO: {
-        alpha2code: provinceTo,
-        countryCode: countryTo,
-        name: `${countryTo}-${provinceTo}`
+      shipmentPackageUnits: {
+        name: 'Imperial',
+        system: 'IMPERIAL'
       },
 
-      countryName: this.getCountryName(countryTo),
-      provinceName: this.getProvinceName(provinceTo),
-      cityName: formValue.toCity,
-      alphaNumericPostalCode: formValue.toPostal,
-      countryCode: countryTo
-    },
+      shipmentPackages:
+        formValue.packages.map(
+          (pkg: any) => ({
+            description:
+              pkg.description,
 
-    scheduledShipDate,
+            height:
+              Number(pkg.height),
 
-    packageTypeDTO: {
-      name: 'Package'
-    },
+            length:
+              Number(pkg.length),
 
-    shipmentPackageUnits: {
-      name: 'Imperial',
-      system: 'IMPERIAL'
-    },
+            weight:
+              Number(pkg.weight),
 
-    shipmentPackages: formValue.packages.map((pkg: any) => ({
-      description: pkg.description,
-      height: Number(pkg.height),
-      length: Number(pkg.length),
-      weight: Number(pkg.weight),
-      width: Number(pkg.width)
-    })),
+            width:
+              Number(pkg.width)
+          })
+        ),
 
-    shippingOrderCODService: {
-      codServiceId: 0
-    },
+      shippingOrderCODService: {
+        codServiceId: 0
+      },
 
-    currencyCode: 'CAD'
-  };
-}
+      currencyCode: 'CAD'
+    };
+  }
 
-  private getProvinceCode(countryCode: string, provinceCode: string): string {
-    // Format: "CA-ON", "CA-BC", etc.
+  // ============================================================
+  // HELPERS
+  // ============================================================
+
+  private getProvinceCode(
+    countryCode: string,
+    provinceCode: string
+  ): string {
     return `${countryCode}-${provinceCode}`;
   }
 
-  private getProvinceName(code: string): string {
+  private getProvinceName(
+    code: string
+  ): string {
     const map: Record<string, string> = {
-      'ON': 'Ontario',
-      'BC': 'British Columbia',
-      'AB': 'Alberta',
-      'QC': 'Quebec'
+      ON: 'Ontario',
+      BC: 'British Columbia',
+      AB: 'Alberta',
+      QC: 'Quebec'
     };
+
     return map[code] || code;
   }
 
-  private getCountryName(code: string): string {
+  private getCountryName(
+    code: string
+  ): string {
     const map: Record<string, string> = {
-      'CA': 'Canada',
-      'US': 'United States',
-      'MX': 'Mexico'
+      CA: 'Canada',
+      US: 'United States',
+      MX: 'Mexico'
     };
+
     return map[code] || code;
   }
 
-  private normalizePhone(phone: string): string {
-  // Remove all non-digit characters
+  private normalizePhone(
+    phone: string
+  ): string {
     return phone.replace(/\D/g, '');
   }
 
-  private normalizePostalCode(postalCode: string): string {
+  private normalizePostalCode(
+    postalCode: string
+  ): string {
     return postalCode
       .trim()
       .toUpperCase()
@@ -613,127 +795,248 @@ onShipment(): void {
   }
 
   private getTodayDate(): string {
-  const today = new Date();
-
-  const year = today.getFullYear();
-  const month = String(today.getMonth() + 1).padStart(2, '0');
-  const day = String(today.getDate()).padStart(2, '0');
-
-  return `${year}-${month}-${day}`;
-}
-
-
-  private getTomorrowDate(): string {
     const today = new Date();
-    const tomorrow = new Date(today);
-    tomorrow.setDate(tomorrow.getDate() + 1);
-    const year = tomorrow.getFullYear();
-    const month = String(tomorrow.getMonth() + 1).padStart(2, '0');
-    const day = String(tomorrow.getDate()).padStart(2, '0');
+
+    const year =
+      today.getFullYear();
+
+    const month =
+      String(
+        today.getMonth() + 1
+      ).padStart(2, '0');
+
+    const day =
+      String(
+        today.getDate()
+      ).padStart(2, '0');
+
     return `${year}-${month}-${day}`;
   }
 
-  private downloadPDF(
-  trackingNumber: string,
-  pdfData: string | Blob | ArrayBuffer | undefined
-): void {
+  private getTomorrowDate(): string {
+    const today = new Date();
 
-  console.log('===== PDF DOWNLOAD =====');
-  console.log('Tracking number:', trackingNumber);
-  console.log('PDF data exists:', !!pdfData);
-  console.log('PDF data type:', typeof pdfData);
+    const tomorrow =
+      new Date(today);
 
-  if (!pdfData) {
-    console.error('No PDF data returned by shipment API');
-    this.errorMessage.set('Shipment created, but no PDF was returned.');
-    return;
+    tomorrow.setDate(
+      tomorrow.getDate() + 1
+    );
+
+    const year =
+      tomorrow.getFullYear();
+
+    const month =
+      String(
+        tomorrow.getMonth() + 1
+      ).padStart(2, '0');
+
+    const day =
+      String(
+        tomorrow.getDate()
+      ).padStart(2, '0');
+
+    return `${year}-${month}-${day}`;
   }
 
-  try {
-    let blob: Blob;
+  // ============================================================
+  // DOWNLOAD PDF
+  // ============================================================
 
-    if (pdfData instanceof Blob) {
+  private downloadPDF(
+    trackingNumber: string,
+    pdfData:
+      | string
+      | Blob
+      | ArrayBuffer
+      | undefined
+  ): void {
 
-      console.log('PDF is already a Blob');
+    console.log(
+      '===== PDF DOWNLOAD ====='
+    );
 
-      blob = pdfData;
+    console.log(
+      'Tracking number:',
+      trackingNumber
+    );
 
-    } else if (pdfData instanceof ArrayBuffer) {
+    console.log(
+      'PDF data exists:',
+      !!pdfData
+    );
 
-      console.log('PDF is an ArrayBuffer');
+    console.log(
+      'PDF data type:',
+      typeof pdfData
+    );
 
-      blob = new Blob(
-        [pdfData],
-        { type: 'application/pdf' }
+    if (!pdfData) {
+      console.error(
+        'No PDF data returned by shipment API'
       );
 
-    } else if (typeof pdfData === 'string') {
+      this.errorMessage.set(
+        'Shipment created, but no PDF was returned.'
+      );
 
-      console.log('PDF is a Base64 string');
-      console.log('PDF string length:', pdfData.length);
+      return;
+    }
 
-      // Remove data URI prefix if present
-      const base64 = pdfData.includes(',')
-        ? pdfData.split(',')[1]
-        : pdfData;
+    try {
+      let blob: Blob;
 
-      // Remove whitespace/newlines
-      const cleanBase64 = base64.replace(/\s/g, '');
+      if (pdfData instanceof Blob) {
 
-      const binaryString = atob(cleanBase64);
+        console.log(
+          'PDF is already a Blob'
+        );
 
-      const bytes = new Uint8Array(binaryString.length);
+        blob = pdfData;
 
-      for (let i = 0; i < binaryString.length; i++) {
-        bytes[i] = binaryString.charCodeAt(i);
+      } else if (
+        pdfData instanceof ArrayBuffer
+      ) {
+
+        console.log(
+          'PDF is an ArrayBuffer'
+        );
+
+        blob = new Blob(
+          [pdfData],
+          {
+            type: 'application/pdf'
+          }
+        );
+
+      } else if (
+        typeof pdfData === 'string'
+      ) {
+
+        console.log(
+          'PDF is a Base64 string'
+        );
+
+        console.log(
+          'PDF string length:',
+          pdfData.length
+        );
+
+        const base64 =
+          pdfData.includes(',')
+            ? pdfData.split(',')[1]
+            : pdfData;
+
+        const cleanBase64 =
+          base64.replace(/\s/g, '');
+
+        const binaryString =
+          atob(cleanBase64);
+
+        const bytes =
+          new Uint8Array(
+            binaryString.length
+          );
+
+        for (
+          let i = 0;
+          i < binaryString.length;
+          i++
+        ) {
+          bytes[i] =
+            binaryString.charCodeAt(i);
+        }
+
+        blob = new Blob(
+          [bytes],
+          {
+            type: 'application/pdf'
+          }
+        );
+
+      } else {
+
+        console.error(
+          'Unsupported PDF response type'
+        );
+
+        this.errorMessage.set(
+          'Unsupported PDF response format.'
+        );
+
+        return;
       }
 
-      blob = new Blob(
-        [bytes],
-        { type: 'application/pdf' }
+      console.log(
+        'Blob created'
       );
 
-    } else {
+      console.log(
+        'Blob size:',
+        blob.size
+      );
 
-      console.error('Unsupported PDF response type');
-      this.errorMessage.set('Unsupported PDF response format.');
-      return;
+      console.log(
+        'Blob type:',
+        blob.type
+      );
+
+      if (blob.size === 0) {
+
+        console.error(
+          'PDF blob is empty'
+        );
+
+        this.errorMessage.set(
+          'The returned PDF is empty.'
+        );
+
+        return;
+      }
+
+      const url =
+        window.URL.createObjectURL(
+          blob
+        );
+
+      const link =
+        document.createElement('a');
+
+      link.href = url;
+
+      link.download =
+        `${trackingNumber || 'shipment'}.pdf`;
+
+      document.body.appendChild(
+        link
+      );
+
+      link.click();
+
+      document.body.removeChild(
+        link
+      );
+
+      setTimeout(() => {
+        window.URL.revokeObjectURL(
+          url
+        );
+      }, 1000);
+
+      console.log(
+        'PDF download triggered'
+      );
+
+    } catch (error) {
+
+      console.error(
+        'PDF DOWNLOAD ERROR:',
+        error
+      );
+
+      this.errorMessage.set(
+        'Shipment was created, but the PDF could not be downloaded.'
+      );
     }
-
-    console.log('Blob created');
-    console.log('Blob size:', blob.size);
-    console.log('Blob type:', blob.type);
-
-    if (blob.size === 0) {
-      console.error('PDF blob is empty');
-      this.errorMessage.set('The returned PDF is empty.');
-      return;
-    }
-
-    const url = window.URL.createObjectURL(blob);
-
-    const link = document.createElement('a');
-
-    link.href = url;
-    link.download = `${trackingNumber || 'shipment'}.pdf`;
-
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-
-    setTimeout(() => {
-      window.URL.revokeObjectURL(url);
-    }, 1000);
-
-    console.log('PDF download triggered');
-
-  } catch (error) {
-
-    console.error('PDF DOWNLOAD ERROR:', error);
-
-    this.errorMessage.set(
-      'Shipment was created, but the PDF could not be downloaded.'
-    );
   }
-}
 }
