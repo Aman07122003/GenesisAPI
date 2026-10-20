@@ -1,5 +1,4 @@
-// Production environment
 export const environment = {
   production: true,
-  apiBaseUrl: 'https://genesis.eshipper.com/api'
+  apiBaseUrl: 'http://myapp-backend-dev.ap-south-1.elasticbeanstalk.com/api'
 };
